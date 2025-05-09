@@ -17,8 +17,25 @@ public class Vehicle {
     private String type;
     private int mileage;
     private String technical_condition;
-//    private double price_per_day;
-//    private String imagePath;
+    private double price_per_day;
+    private String imagePath;
+
+    public Vehicle(){}
+
+    public Vehicle(String make, String model,
+                   int production_year, String license_plate,
+                   String type, int mileage, String technical_condition,
+                   double price_per_day, String imagePath) {
+        this.make = make;
+        this.model = model;
+        this.production_year = production_year;
+        this.license_plate = license_plate;
+        this.type = type;
+        this.mileage = mileage;
+        this.technical_condition = technical_condition;
+        this.price_per_day = price_per_day;
+        this.imagePath = imagePath;
+    }
 
     public Long getId() { return id; }
 
@@ -52,15 +69,15 @@ public class Vehicle {
 
     public void setTechnical_condition(String technical_condition) { this.technical_condition = technical_condition; }
 
-//    public double getPrice_per_day() { return price_per_day; }
-//
-//    public void setPrice_per_day(int price_per_day) {this.price_per_day = price_per_day; }
-//
-//    public String getImagePath() {
-//        return imagePath;
-//    }
-//
-//    public void setImagePath(String imagePath) {
-//        this.imagePath = imagePath;
-//    }
+    public double getPrice_per_day() { return price_per_day; }
+
+    public void setPrice_per_day(int price_per_day) {this.price_per_day = price_per_day; }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 }

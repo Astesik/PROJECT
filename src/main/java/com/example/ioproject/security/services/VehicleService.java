@@ -22,7 +22,12 @@ public class VehicleService {
         return vehicleRepository.findById(id);
     }
 
-    public Vehicle saveVehicle(Vehicle vehicle) {
+//    public Optional<Vehicle> getVehiclePhotoByUrl(String file_url) {
+//        return vehicleRepository.findByImage(file_url);
+//    }
+
+    public Vehicle saveVehicle(Vehicle vehicle, String photoUrl) {
+        vehicle.setImagePath(photoUrl);
         return vehicleRepository.save(vehicle);
     }
 

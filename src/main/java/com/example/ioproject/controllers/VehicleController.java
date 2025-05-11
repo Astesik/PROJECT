@@ -30,15 +30,13 @@ public class VehicleController {
     private VehicleService vehicleService;
 
     // Endpoint: Pobierz listę pojazdów (dla wszystkich autoryzowanych użytkowników)
-    @GetMapping("/get")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @GetMapping
     public List<Vehicle> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 
     // Endpoint: Pobierz pojazd po ID (dla wszystkich autoryzowanych użytkowników)
-    @GetMapping("/get/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @GetMapping("/{id}")
     public Optional<Vehicle> getVehicleById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
@@ -78,10 +76,18 @@ public class VehicleController {
                                               @RequestParam("model") String model,
                                               @RequestParam("production_year") int productionYear,
                                               @RequestParam("license_plate") String licensePlate,
-                                              @RequestParam("type") String type,
+                                              @RequestParam("engine_type") String engine_type,
+                                              @RequestParam("vehicle_type") String vehicle_type,
                                               @RequestParam("mileage") int mileage,
-                                              @RequestParam("technical_condition") String technicalCondition,
-                                              @RequestParam("price_per_day") double pricePerDay) {
+                                              @RequestParam("status") String status,
+                                              @RequestParam("description") String description,
+                                              @RequestParam("daily_price") double daily_price,
+                                              @RequestParam("weekly_price") double weekly_price,
+                                              @RequestParam("monthly_price") double monthly_price,
+                                              @RequestParam("features") List<String> features)
+
+
+    {
         try{
             // Pobranie typu pliku
             String contentType = file.getContentType();
@@ -117,8 +123,7 @@ public class VehicleController {
             String fileUrl = "/files/" + fileName;
 
             Vehicle vehicle = new Vehicle(make, model, productionYear,
-                                            licensePlate, type, mileage,
-                                            technicalCondition, pricePerDay, fileUrl);
+                                            licensePlate, engine_type, vehicle_type, mileage, status, fileUrl, description, features, daily_price, weekly_price, monthly_price);
 
             return ResponseEntity.ok(vehicleService.saveVehicle(vehicle, fileUrl));
         }catch (IOException e) {

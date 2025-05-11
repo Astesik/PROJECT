@@ -27,7 +27,7 @@ public class VehicleService {
 //    }
 
     public Vehicle saveVehicle(Vehicle vehicle, String photoUrl) {
-        vehicle.setImagePath(photoUrl);
+        vehicle.setImage_url(photoUrl);
         return vehicleRepository.save(vehicle);
     }
 

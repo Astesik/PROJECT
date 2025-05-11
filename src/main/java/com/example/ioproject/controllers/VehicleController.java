@@ -30,13 +30,14 @@ public class VehicleController {
     private VehicleService vehicleService;
 
     // Endpoint: Pobierz listę pojazdów (dla wszystkich autoryzowanych użytkowników)
-    @GetMapping
+    @GetMapping("/get")
     public List<Vehicle> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 
     // Endpoint: Pobierz pojazd po ID (dla wszystkich autoryzowanych użytkowników)
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public Optional<Vehicle> getVehicleById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
@@ -68,81 +69,4 @@ public class VehicleController {
     }
 
 
-    // Endpoint: Dodaj nowy pojazd (dla admina)
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Vehicle> addVehicle(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("make") String make,
-                                              @RequestParam("model") String model,
-                                              @RequestParam("production_year") int productionYear,
-                                              @RequestParam("license_plate") String licensePlate,
-                                              @RequestParam("engine_type") String engine_type,
-                                              @RequestParam("vehicle_type") String vehicle_type,
-                                              @RequestParam("mileage") int mileage,
-                                              @RequestParam("status") String status,
-                                              @RequestParam("description") String description,
-                                              @RequestParam("daily_price") double daily_price,
-                                              @RequestParam("weekly_price") double weekly_price,
-                                              @RequestParam("monthly_price") double monthly_price,
-                                              @RequestParam("features") List<String> features)
-
-
-    {
-        try{
-            // Pobranie typu pliku
-            String contentType = file.getContentType();
-            System.out.println(contentType);
-            String extension = "";
-
-            // Mapowanie typu na rozszerzenie
-            if (contentType != null) {
-                switch (contentType) {
-                    case "image/jpeg":
-                        extension = ".jpg";
-                        break;
-                    case "image/png":
-                        extension = ".png";
-                        break;
-                    case "image/gif":
-                        extension = ".gif";
-                        break;
-                    default:
-                        return null;
-                }
-            }
-
-            // Tworzenie ścieżki zapisu
-            String fileName = UUID.randomUUID().toString() + "_" + extension;
-            Path filePath = Paths.get("uploads/" + fileName);
-
-            // Zapis na dysku
-            Files.createDirectories(filePath.getParent());
-            file.transferTo(filePath);
-
-            // Zwrócenie URL-a pliku
-            String fileUrl = "/files/" + fileName;
-
-            Vehicle vehicle = new Vehicle(make, model, productionYear,
-                                            licensePlate, engine_type, vehicle_type, mileage, status, fileUrl, description, features, daily_price, weekly_price, monthly_price);
-
-            return ResponseEntity.ok(vehicleService.saveVehicle(vehicle, fileUrl));
-        }catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    // Endpoint: Zaktualizuj pojazd (dla admina)
-//    @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public Vehicle updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
-//        vehicle.setId(id); // Ustawiamy ID, aby dokonać aktualizacji istniejącego pojazdu
-//        return vehicleService.saveVehicle(vehicle);
-//    }
-
-    // Endpoint: Usuń pojazd (dla admina)
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteVehicle(@PathVariable Long id) {
-        vehicleService.deleteVehicle(id);
-    }
 }

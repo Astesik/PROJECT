@@ -37,36 +37,42 @@ public class VehicleController {
 
     // Endpoint: Pobierz pojazd po ID (dla wszystkich autoryzowanych użytkowników)
     @GetMapping("/get/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public Optional<Vehicle> getVehicleById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
 
-    // Endpoint: Pobierz zdjecie po url (dla wszystkich autoryzowanych użytkowników)
-    @GetMapping("/files/{filename}")
-    public ResponseEntity<Resource> getVehiclePhoto(@PathVariable String filename) {
-        try {
-            // Tworzenie ścieżki do pliku
-            Path filePath = Paths.get("uploads/" + filename);
-            Resource resource = new UrlResource(filePath.toUri());
+    // Endpoint: Dodaj nowy pojazd (tylko dla użytkowników z rolą ADMIN lub EMPLOYEE)
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle vehicle) {
+        Vehicle savedVehicle = vehicleService.saveVehicle(vehicle);
+        return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
+    }
 
-            if (resource.exists() && resource.isReadable()) {
-                // Ustalanie typu MIME na podstawie zawartości pliku
-                String contentType = Files.probeContentType(filePath);
-                if (contentType == null) {
-                    contentType = "application/octet-stream";
-                }
+    // Endpoint: Aktualizuj pojazd (tylko dla użytkowników z rolą ADMIN lub EMPLOYEE)
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
+        Optional<Vehicle> vehicleData = vehicleService.getVehicleById(id);
 
-                return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(contentType))
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (vehicleData.isPresent()) {
+            vehicle.setId(id);
+            Vehicle updatedVehicle = vehicleService.saveVehicle(vehicle);
+            return new ResponseEntity<>(updatedVehicle, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-
+    // Endpoint: Usuń pojazd (tylko dla użytkowników z rolą ADMIN)
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<HttpStatus> deleteVehicle(@PathVariable Long id) {
+        try {
+            vehicleService.deleteVehicle(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

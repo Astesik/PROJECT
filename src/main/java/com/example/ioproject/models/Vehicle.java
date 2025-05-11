@@ -131,4 +131,11 @@ public class Vehicle {
 
     public void setMonthly_rate(int price_per_day) {this.monthly_rate = price_per_day; }
 
+    public List<String> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<String> features) {
+        this.features = features;
+    }
 }

@@ -22,12 +22,12 @@ public class VehicleService {
         return vehicleRepository.findById(id);
     }
 
-//    public Optional<Vehicle> getVehiclePhotoByUrl(String file_url) {
-//        return vehicleRepository.findByImage(file_url);
-//    }
+    public Vehicle saveVehicle(Vehicle vehicle) {
+        // For new vehicles, ensure the ID is null to let the database auto-generate it
+        if (vehicle.getId() != null && vehicle.getId() == 0) {
+            vehicle.setId(null);
+        }
 
-    public Vehicle saveVehicle(Vehicle vehicle, String photoUrl) {
-        vehicle.setImage_url(photoUrl);
         return vehicleRepository.save(vehicle);
     }
 

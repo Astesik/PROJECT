@@ -86,7 +86,8 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
           auth.requestMatchers(
                               "/api/auth/**",
                               "/api/test/**",
-                              "/api/vehicles/get/**")
+                              "/api/vehicles/get/**",
+                              "/api/payment/webhook")
                   .permitAll()
                   .anyRequest()
                   .authenticated()

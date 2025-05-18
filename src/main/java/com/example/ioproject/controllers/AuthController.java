@@ -99,7 +99,10 @@ public class AuthController {
 
   @PostMapping("/google")
   public ResponseEntity<?> authWithGoogle(@Valid @RequestBody GoogleRequest request){
-    var payload = googleAuthService.verify(request.getIdToken());
+
+    String IdToken = googleAuthService.retriveIdToken(request);
+
+    var payload = googleAuthService.verify(IdToken);
     if (payload == null) {
       return ResponseEntity.badRequest().body(new MessageResponse("Invalid Google ID token."));
     }
@@ -111,8 +114,6 @@ public class AuthController {
     if (!emailVerified) {
       return ResponseEntity.badRequest().body(new MessageResponse("Email is not verified by Google."));
     }
-
-    System.out.println(payload);
 
     User user = userRepository.findByEmail(email).orElse(null);
     if (user == null) {

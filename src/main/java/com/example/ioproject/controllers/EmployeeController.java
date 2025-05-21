@@ -1,12 +1,12 @@
 package com.example.ioproject.controllers;
 
-import com.example.ioproject.models.ERole;
-import com.example.ioproject.models.Role;
-import com.example.ioproject.models.User;
+import com.example.ioproject.models.*;
 import com.example.ioproject.payload.response.MessageResponse;
 import com.example.ioproject.repository.RoleRepository;
 import com.example.ioproject.repository.UserRepository;
+import com.example.ioproject.security.services.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/manager")
+@RequestMapping("/api/staff")
 public class EmployeeController {
 
     @Autowired
@@ -27,6 +27,9 @@ public class EmployeeController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    MaintenanceService maintenanceService;
 
     @PostMapping("/add-worker")
     @PreAuthorize("hasRole('ADMIN')")
@@ -68,5 +71,16 @@ public class EmployeeController {
         userRepository.save(user);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/maintenance-tasks")
+    public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTask maintenanceTask) {
+        MaintenanceTask savedMaintenance = maintenanceService.saveMaintenance(maintenanceTask);
+        return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/maintenance-tasks")
+    public List<MaintenanceTask> getMaintenanceTasks() {
+        return maintenanceService.getAllMaintenanceTasks();
     }
 }

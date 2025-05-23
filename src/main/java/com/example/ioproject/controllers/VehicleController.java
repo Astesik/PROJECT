@@ -1,6 +1,8 @@
 package com.example.ioproject.controllers;
 
+import com.example.ioproject.models.MaintenanceTask;
 import com.example.ioproject.models.Vehicle;
+import com.example.ioproject.security.services.MaintenanceService;
 import com.example.ioproject.security.services.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -28,6 +30,9 @@ public class VehicleController {
 
     @Autowired
     private VehicleService vehicleService;
+
+    @Autowired
+    MaintenanceService maintenanceService;
 
     // Endpoint: Pobierz listę pojazdów (dla wszystkich autoryzowanych użytkowników)
     @GetMapping("/get")
@@ -73,6 +78,31 @@ public class VehicleController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/maintenance-tasks")
+    public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTask maintenanceTask) {
+        MaintenanceTask savedMaintenance = maintenanceService.saveMaintenance(maintenanceTask);
+        return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/maintenance-tasks")
+    public List<MaintenanceTask> getMaintenanceTasks() {
+        return maintenanceService.getAllMaintenanceTasks();
+    }
+
+    @PutMapping("/maintenance-tasks/update/{id}")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    public ResponseEntity<MaintenanceTask> updateMaintenanceTAsk(@PathVariable Long id, @RequestBody MaintenanceTask maintenanceTask) {
+        Optional<MaintenanceTask> maintenanceData = maintenanceService.getMaintenanceById(id);
+
+        if (maintenanceData.isPresent()) {
+            maintenanceTask.setId(id);
+            MaintenanceTask updatedTask = maintenanceService.saveMaintenance(maintenanceTask);
+            return new ResponseEntity<>(updatedTask, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

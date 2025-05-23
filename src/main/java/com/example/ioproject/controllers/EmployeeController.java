@@ -28,9 +28,6 @@ public class EmployeeController {
     @Autowired
     RoleRepository roleRepository;
 
-    @Autowired
-    MaintenanceService maintenanceService;
-
     @PostMapping("/add-worker")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> setUserAsWorker(@RequestParam String email) {
@@ -71,16 +68,5 @@ public class EmployeeController {
         userRepository.save(user);
 
         return ResponseEntity.ok(user);
-    }
-
-    @PostMapping("/maintenance-tasks")
-    public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTask maintenanceTask) {
-        MaintenanceTask savedMaintenance = maintenanceService.saveMaintenance(maintenanceTask);
-        return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/maintenance-tasks")
-    public List<MaintenanceTask> getMaintenanceTasks() {
-        return maintenanceService.getAllMaintenanceTasks();
     }
 }

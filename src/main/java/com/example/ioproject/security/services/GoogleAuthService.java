@@ -38,6 +38,9 @@ public class GoogleAuthService {
     public GoogleAuthService(@Value("${google.client.id}") String clientId) {
         this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                 .setAudience(Collections.singletonList(clientId))
+
+
+
                 .build();
     }
 

@@ -18,6 +18,7 @@ public class MaintenanceTask {
     private String start_date;
     private String end_date;
     private Double cost;
+    private Boolean done;
 
     public Long getId() {
         return id;
@@ -65,5 +66,22 @@ public class MaintenanceTask {
 
     public void setCost(Double cost) {
         this.cost = cost;
+    }
+
+    public Boolean getDone() {return done;}
+
+    public void setDone(Boolean done) {this.done = done;}
+
+    @Override
+    public String toString() {
+        return "MaintenanceTask{" +
+                "id=" + id +
+                ", vehicle=" + vehicle +
+                ", description='" + description + '\'' +
+                ", start_date='" + start_date + '\'' +
+                ", end_date='" + end_date + '\'' +
+                ", cost=" + cost +
+                ", done=" + done +
+                '}';
     }
 }

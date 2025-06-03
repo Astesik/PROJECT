@@ -5,16 +5,14 @@ import com.example.ioproject.payload.response.MessageResponse;
 import com.example.ioproject.repository.RoleRepository;
 import com.example.ioproject.repository.UserRepository;
 import com.example.ioproject.security.services.MaintenanceService;
+import com.example.ioproject.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -23,50 +21,34 @@ import java.util.stream.Collectors;
 public class EmployeeController {
 
     @Autowired
-    UserRepository userRepository;
+    UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     RoleRepository roleRepository;
 
-    @PostMapping("/add-worker")
+    @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> setUserAsWorker(@RequestParam String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
+    public List<User> getAllUsers() {return userDetailsService.getAllUsers();}
 
-        if (user == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Błąd: Użytkownik o podanym e-mailu nie istnieje!"));
-        }
+    @GetMapping("/users-with-roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserWithRole> getUsersWithRoles() {return userDetailsService.getUsersWithRoles();}
 
-        Set<Role> roles = new HashSet<>();
-
-        Role userRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(userRole);
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(user);
+    @PutMapping("/users/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserWithRole updateUser(@RequestBody UserWithRole userWithRole) {
+        return userDetailsService.updateUser(userWithRole);
     }
 
-    @PostMapping("/remove-worker")
+    @DeleteMapping("/users/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> setWorkerAsUser(@RequestParam String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Błąd: Użytkownik o podanym e-mailu nie istnieje!"));
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        try {
+            userDetailsService.deleteUser(id);
+            return ResponseEntity.ok().body(Map.of("message", "User deleted successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete user"));
         }
-
-        Set<Role> roles = new HashSet<>();
-
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(userRole);
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(user);
     }
 }

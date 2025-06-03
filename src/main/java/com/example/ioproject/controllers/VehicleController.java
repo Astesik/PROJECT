@@ -48,7 +48,7 @@ public class VehicleController {
 
     // Endpoint: Dodaj nowy pojazd (tylko dla użytkowników z rolą ADMIN lub EMPLOYEE)
     @PostMapping("/add")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle vehicle) {
         Vehicle savedVehicle = vehicleService.saveVehicle(vehicle);
         return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
@@ -56,7 +56,7 @@ public class VehicleController {
 
     // Endpoint: Aktualizuj pojazd (tylko dla użytkowników z rolą ADMIN lub EMPLOYEE)
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
         Optional<Vehicle> vehicleData = vehicleService.getVehicleById(id);
 
@@ -93,7 +93,7 @@ public class VehicleController {
     }
 
     @PutMapping("/maintenance-tasks/update/{id}")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYEE')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<MaintenanceTask> updateMaintenanceTAsk(@PathVariable Long id, @RequestBody MaintenanceTask maintenanceTask) {
         Optional<MaintenanceTask> maintenanceData = maintenanceService.getMaintenanceById(id);
 

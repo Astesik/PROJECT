@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -109,5 +110,63 @@ class EmployeeControllerTest {
         assertEquals("Failed to delete user", body.get("error"));
 
         verify(userDetailsService, times(1)).deleteUser(1L);
+    }
+
+    @Test
+    void testGetUsersWithRoles_ContainsExpectedRole() {
+        UserWithRole userWithRole = new UserWithRole(1L, "admin", "admin@example.com", "ROLE_ADMIN");
+
+        when(userDetailsService.getUsersWithRoles()).thenReturn(List.of(userWithRole));
+
+        List<UserWithRole> result = employeeController.getUsersWithRoles();
+
+        assertEquals("ROLE_ADMIN", result.get(0).getRole());
+        verify(userDetailsService, times(1)).getUsersWithRoles();
+    }
+
+    @Test
+    void testUpdateUser_WithInvalidData() {
+        UserWithRole invalidUser = new UserWithRole(2L, "", "invalid@example.com", "ROLE_USER");
+
+        when(userDetailsService.updateUser(any(UserWithRole.class))).thenReturn(invalidUser);
+
+        UserWithRole result = employeeController.updateUser(invalidUser);
+
+        assertEquals("", result.getUsername()); // lub zakładany efekt walidacji
+        verify(userDetailsService, times(1)).updateUser(any(UserWithRole.class));
+    }
+
+    @Test
+    void testUpdateUser_ThrowsException() {
+        when(userDetailsService.updateUser(any(UserWithRole.class)))
+                .thenThrow(new RuntimeException("Update failed"));
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.updateUser(sampleUserWithRole);
+        });
+
+        verify(userDetailsService, times(1)).updateUser(any(UserWithRole.class));
+    }
+
+    @Test
+    void testGetUsersWithRoles_EmptyList() {
+        when(userDetailsService.getUsersWithRoles()).thenReturn(Collections.emptyList());
+
+        List<UserWithRole> result = employeeController.getUsersWithRoles();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(userDetailsService, times(1)).getUsersWithRoles();
+    }
+
+    @Test
+    void testGetAllUsers_EmptyList() {
+        when(userDetailsService.getAllUsers()).thenReturn(Collections.emptyList());
+
+        List<User> result = employeeController.getAllUsers();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(userDetailsService, times(1)).getAllUsers();
     }
 }

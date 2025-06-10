@@ -39,7 +39,7 @@ class PaymentControllerTest {
 
     @Test
     void testHandleStripeWebhook_withValidPayload() throws Exception {
-        // Przygotuj sample JSON webhook payload
+        // sample JSON webhook payload
         String payload = """
                 {
                   "id": "evt_test_webhook",

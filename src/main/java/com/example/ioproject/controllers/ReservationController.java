@@ -36,24 +36,24 @@ public class ReservationController {
     }
 
     // Endpoint: Dodaj nową rezerwację (dla admina i ??klienta??)
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')") // or hasRole('USER')")
-    public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) {
-        boolean available = reservationService.isVehicleAvailable(
-                reservation.getVehicle_id(),
-                reservation.getStart_date(),
-                reservation.getEnd_date()
-        );
-
-        if (!available) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Rezerwacja nieudana: pojazd jest już zarezerwowany w tym terminie.");
-        }
-
-        Reservation saved = reservationService.saveReservation(reservation);
-        return ResponseEntity.ok(saved);
-    }
+//    @PostMapping
+//    @PreAuthorize("hasRole('ADMIN')") // or hasRole('USER')")
+//    public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) {
+//        boolean available = reservationService.isVehicleAvailable(
+//                reservation.getVehicle_id(),
+//                reservation.getStart_date(),
+//                reservation.getEnd_date()
+//        );
+//
+//        if (!available) {
+//            return ResponseEntity
+//                    .status(HttpStatus.CONFLICT)
+//                    .body("Rezerwacja nieudana: pojazd jest już zarezerwowany w tym terminie.");
+//        }
+//
+//        Reservation saved = reservationService.saveReservation(reservation);
+//        return ResponseEntity.ok(saved);
+//    }
 
     // Endpoint: Zaktualizuj rezerwacje (dla admina)
     @PutMapping("/{id}")
@@ -69,4 +69,32 @@ public class ReservationController {
     public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
     }
+
+
+    // Dodaj nową rezerwację (status PENDING domyslnie)
+    @PostMapping
+    public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) {
+        boolean available = reservationService.isVehicleAvailable(
+                reservation.getVehicle_id(),
+                reservation.getStart_date(),
+                reservation.getEnd_date()
+        );
+        if (!available) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Rezerwacja nieudana: pojazd jest już zarezerwowany w tym terminie.");
+        }
+        reservation.setStatus("PENDING"); // <-- tu!
+        Reservation saved = reservationService.saveReservation(reservation);
+        return ResponseEntity.ok(saved);
+    }
+
+    // Ręcznie oznacz jako opłacone
+    @PutMapping("/{id}/pay-manual")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> markReservationAsManual(@PathVariable Long id) {
+        reservationService.markAsManual(id);
+        return ResponseEntity.ok("Reservation marked as manually paid");
+    }
+
+
 }

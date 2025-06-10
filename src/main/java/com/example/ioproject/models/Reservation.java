@@ -15,7 +15,8 @@ public class Reservation {
     private String start_date;
     private String end_date;
     private double cost;
-    private String status; //planned, cancelled, ongoing
+    private String status; // "PENDING", "PAID", "MANUAL", "CANCELLED"
+    private String stripeSessionId;
 
     public Long getId() {
         return id;
@@ -71,5 +72,13 @@ public class Reservation {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStripeSessionId() {
+        return stripeSessionId;
+    }
+
+    public void setStripeSessionId(String stripeSessionId) {
+        this.stripeSessionId = stripeSessionId;
     }
 }

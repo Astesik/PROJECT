@@ -2,9 +2,11 @@ package com.example.ioproject.controllers;
 
 
 import com.example.ioproject.payload.request.CheckoutRequest;
+import com.example.ioproject.security.services.ReservationService;
 import com.stripe.Stripe;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +18,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/payment")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class PaymentController {
 
   @Value("${stripe.secret.key}")
   private String stripeSecretKey;
+
   @Value("${stripe.webhook.key}")
   private String stripeWebhookKey;
+
+  @Autowired
+  private ReservationService reservationService;
 
   @PostMapping("/create-checkout-session")
   public ResponseEntity<?> createCheckoutSession(@RequestBody CheckoutRequest request) {
@@ -35,6 +41,7 @@ public class PaymentController {
               .setMode(SessionCreateParams.Mode.PAYMENT)
               .setSuccessUrl("http://localhost:5173/payment/success")
               .setCancelUrl("http://localhost:5173/payment/cancel")
+              .setClientReferenceId(String.valueOf(request.getReservationId()))
               .addLineItem(
                       SessionCreateParams.LineItem.builder()
                               .setQuantity(1L)
@@ -55,6 +62,9 @@ public class PaymentController {
 
       Session session = Session.create(params);
 
+
+      reservationService.setStripeSessionId(request.getReservationId(), session.getId());
+
       Map<String, String> responseData = new HashMap<>();
       responseData.put("url", session.getUrl());
 
@@ -67,7 +77,7 @@ public class PaymentController {
 
   @PostMapping("/webhook")
   public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
-    String endpointSecret = stripeWebhookKey; // SecretKey z Stripe
+    String endpointSecret = stripeWebhookKey;
 
     try {
       Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
@@ -76,12 +86,18 @@ public class PaymentController {
       if ("checkout.session.completed".equals(event.getType())) {
         Session session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow();
 
-        String sessionId = session.getId();
-        String customerEmail = session.getCustomerDetails().getEmail();
-        Long amountTotal = session.getAmountTotal();
+        String reservationId = session.getClientReferenceId();
+        String stripeSessionId = session.getId();
 
-        // dodać tutaj co ma się robić po płatności w backendzie
-        System.out.println("💰 Płatność zakończona! Session ID: " + sessionId + ", Kwota: " + amountTotal);
+
+        if (reservationId != null) {
+          reservationService.markAsPaid(Long.parseLong(reservationId));
+          System.out.println("💰 Rezerwacja " + reservationId + " opłacona przez Stripe!");
+        } else if (stripeSessionId != null) {
+
+          reservationService.findByStripeSessionId(stripeSessionId)
+                  .ifPresent(res -> reservationService.markAsPaid(res.getId()));
+        }
       }
 
       return ResponseEntity.ok("");

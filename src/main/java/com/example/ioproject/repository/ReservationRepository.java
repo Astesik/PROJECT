@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -16,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findConflictingReservations(@Param("vehicleId") int vehicleId,
                                                   @Param("startDate") String startDate,
                                                   @Param("endDate") String endDate);
+
+    Optional<Reservation> findByStripeSessionId(String stripeSessionId);
 }

@@ -10,7 +10,8 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int client_id;
+    @Column(name = "client_id")
+    private Long client_id;
     private int vehicle_id;
     private String start_date;
     private String end_date;
@@ -26,11 +27,11 @@ public class Reservation {
         this.id = id;
     }
 
-    public int getClient_id() {
+    public long getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(long client_id) {
         this.client_id = client_id;
     }
 

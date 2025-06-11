@@ -3,6 +3,7 @@ package com.example.ioproject.controllers;
 import com.example.ioproject.models.ERole;
 import com.example.ioproject.models.Role;
 import com.example.ioproject.models.User;
+import com.example.ioproject.payload.request.ChangePasswordRequest;
 import com.example.ioproject.payload.request.GoogleRequest;
 import com.example.ioproject.payload.request.LoginRequest;
 import com.example.ioproject.payload.request.SignupRequest;
@@ -12,10 +13,12 @@ import com.example.ioproject.repository.RoleRepository;
 import com.example.ioproject.repository.UserRepository;
 import com.example.ioproject.security.jwt.JwtUtils;
 import com.example.ioproject.security.services.GoogleAuthService;
+import com.example.ioproject.security.services.PasswordChangeAttemptService;
 import com.example.ioproject.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +40,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
+
+  @Autowired
+  private PasswordChangeAttemptService passwordChangeAttemptService;
 
   @Autowired
   UserRepository userRepository;
@@ -137,5 +143,44 @@ public class AuthController {
 
     return ResponseEntity
             .ok(new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), roles));
+  }
+
+  @GetMapping("/me")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<?> getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    User user = userRepository.findByUsername(username)
+            .orElse(null);
+    if (user == null) {
+      return ResponseEntity.status(404).body("User not found");
+    }
+    // Usuń hasło z odpowiedzi!
+    user.setPassword(null);
+    return ResponseEntity.ok(user);
+  }
+
+  @PostMapping("/change-password")
+  @PreAuthorize("isAuthenticated()")
+  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+
+    if (passwordChangeAttemptService.isBlocked(username)) {
+      long left = passwordChangeAttemptService.getBlockSeconds(username);
+      return ResponseEntity.status(429).body(new MessageResponse("Too many failed attempts. Try again in " + left + " seconds."));
+    }
+    User user = userRepository.findByUsername(username).orElse(null);
+    if (user == null) {
+      return ResponseEntity.status(404).body(new MessageResponse("User not found"));
+    }
+    if (!encoder.matches(request.getOldPassword(), user.getPassword())) {
+      passwordChangeAttemptService.recordFailed(username);
+      return ResponseEntity.badRequest().body(new MessageResponse("Current password is incorrect"));
+    }
+    passwordChangeAttemptService.recordSuccess(username);
+    user.setPassword(encoder.encode(request.getNewPassword()));
+    userRepository.save(user);
+    return ResponseEntity.ok(new MessageResponse("Password changed successfully!"));
   }
 }

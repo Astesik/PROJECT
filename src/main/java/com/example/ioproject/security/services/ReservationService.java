@@ -55,4 +55,8 @@ public class ReservationService {
     public Optional<Reservation> findByStripeSessionId(String sessionId) {
         return reservationRepository.findByStripeSessionId(sessionId);
     }
+
+    public List<Reservation> getReservationsByClientId(Long clientId) {
+        return reservationRepository.findByClientId(clientId);
+    }
 }

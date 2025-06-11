@@ -19,4 +19,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                                   @Param("endDate") String endDate);
 
     Optional<Reservation> findByStripeSessionId(String stripeSessionId);
+
+    @Query("SELECT r FROM Reservation r WHERE r.client_id = :clientId")
+    List<Reservation> findByClientId(@Param("clientId") Long clientId);
 }

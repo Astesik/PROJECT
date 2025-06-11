@@ -1,6 +1,5 @@
 package com.example.ioproject.repository;
 import com.example.ioproject.models.MaintenanceTask;
-import com.example.ioproject.repository.MaintenanceRepository;
 import com.example.ioproject.security.services.MaintenanceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MaintenanceServiceTest {
+public class MaintenanceRepositoryTest {
     @InjectMocks
     private MaintenanceService maintenanceService;
 

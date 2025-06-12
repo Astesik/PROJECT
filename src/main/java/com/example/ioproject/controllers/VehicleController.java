@@ -69,9 +69,9 @@ public class VehicleController {
         }
     }
 
-    // Endpoint: Usuń pojazd (tylko dla użytkowników z rolą ADMIN)
+    // Endpoint: Usuń pojazd
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<HttpStatus> deleteVehicle(@PathVariable Long id) {
         try {
             vehicleService.deleteVehicle(id);
@@ -82,18 +82,20 @@ public class VehicleController {
     }
 
     @PostMapping("/maintenance-tasks")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
     public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTask maintenanceTask) {
         MaintenanceTask savedMaintenance = maintenanceService.saveMaintenance(maintenanceTask);
         return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
     }
 
     @GetMapping("/maintenance-tasks")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
     public List<MaintenanceTask> getMaintenanceTasks() {
         return maintenanceService.getAllMaintenanceTasks();
     }
 
     @PutMapping("/maintenance-tasks/update/{id}")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
     public ResponseEntity<MaintenanceTask> updateMaintenanceTAsk(@PathVariable Long id, @RequestBody MaintenanceTask maintenanceTask) {
         Optional<MaintenanceTask> maintenanceData = maintenanceService.getMaintenanceById(id);
 

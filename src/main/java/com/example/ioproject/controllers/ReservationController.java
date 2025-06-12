@@ -29,37 +29,18 @@ public class ReservationController {
 
     // Endpoint: Pobierz listę rezerwacji (dla admina i moderatora)
     @GetMapping("/get")
-    // @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
     // Endpoint: Pobierz rezerwacje po ID (dla admina)
     @GetMapping("/get/{id}")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<Reservation> getReservationById(@PathVariable Long id) {
         return reservationService.getReservationById(id);
     }
 
-    // Endpoint: Dodaj nową rezerwację (dla admina i ??klienta??)
-//    @PostMapping
-//    @PreAuthorize("hasRole('ADMIN')") // or hasRole('USER')")
-//    public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) {
-//        boolean available = reservationService.isVehicleAvailable(
-//                reservation.getVehicle_id(),
-//                reservation.getStart_date(),
-//                reservation.getEnd_date()
-//        );
-//
-//        if (!available) {
-//            return ResponseEntity
-//                    .status(HttpStatus.CONFLICT)
-//                    .body("Rezerwacja nieudana: pojazd jest już zarezerwowany w tym terminie.");
-//        }
-//
-//        Reservation saved = reservationService.saveReservation(reservation);
-//        return ResponseEntity.ok(saved);
-//    }
 
     // Endpoint: Zaktualizuj rezerwacje (dla admina)
     @PutMapping("/{id}")

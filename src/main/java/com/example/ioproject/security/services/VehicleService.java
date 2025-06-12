@@ -4,6 +4,7 @@ import com.example.ioproject.models.Reservation;
 import com.example.ioproject.models.Vehicle;
 import com.example.ioproject.repository.ReservationRepository;
 import com.example.ioproject.repository.VehicleRepository;
+import com.example.ioproject.utils.IVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class VehicleService {
+public class VehicleService implements IVehicleService {
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    public VehicleRepository vehicleRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Override
     public List<Vehicle> getAllVehicles() {
         List<Vehicle> vehicles = vehicleRepository.findAll();
         LocalDate today = LocalDate.now();

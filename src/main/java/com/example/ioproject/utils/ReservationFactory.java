@@ -15,4 +15,15 @@ public class ReservationFactory {
         reservation.setStatus("PENDING");
         return reservation;
     }
+
+    public Reservation createPaidReservation(Long clientId, int vehicleId, String startDate, String endDate, double cost) {
+        Reservation reservation = new Reservation();
+        reservation.setClient_id(clientId);
+        reservation.setVehicle_id(vehicleId);
+        reservation.setStart_date(startDate);
+        reservation.setEnd_date(endDate);
+        reservation.setCost(cost);
+        reservation.setStatus("PAID");
+        return reservation;
+    }
 }

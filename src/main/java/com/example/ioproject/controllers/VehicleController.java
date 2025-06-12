@@ -4,6 +4,7 @@ import com.example.ioproject.models.MaintenanceTask;
 import com.example.ioproject.models.Vehicle;
 import com.example.ioproject.security.services.MaintenanceService;
 import com.example.ioproject.security.services.VehicleService;
+import com.example.ioproject.utils.IVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

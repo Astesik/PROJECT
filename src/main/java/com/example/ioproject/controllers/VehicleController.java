@@ -35,7 +35,6 @@ public class VehicleController {
     @Autowired
     MaintenanceService maintenanceService;
 
-    // Endpoint: Pobierz listę pojazdów (dla wszystkich autoryzowanych użytkowników)
     @GetMapping("/get")
     public List<Vehicle> getAllVehicles() {
         return vehicleService.getAllVehicles();

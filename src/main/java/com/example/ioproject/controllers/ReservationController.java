@@ -83,8 +83,15 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Rezerwacja nieudana: pojazd jest już zarezerwowana w tym terminie.");
         }
-        reservation.setStatus("PENDING");
-        Reservation saved = reservationService.saveReservation(reservation);
+
+        Reservation saved = reservationService.createAndSavePendingReservation(
+                user.getId(),
+                reservation.getVehicle_id(),
+                reservation.getStart_date(),
+                reservation.getEnd_date(),
+                reservation.getCost()
+        );
+
         return ResponseEntity.ok(saved);
     }
 

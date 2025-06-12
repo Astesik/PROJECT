@@ -2,6 +2,7 @@ package com.example.ioproject.security.services;
 
 import com.example.ioproject.models.Reservation;
 import com.example.ioproject.repository.ReservationRepository;
+import com.example.ioproject.utils.ReservationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,20 @@ public class ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private ReservationFactory reservationFactory;
+
+    public Reservation createAndSavePendingReservation(Long clientId, int vehicleId, String startDate, String endDate, double cost) {
+        Reservation reservation = reservationFactory.createPendingReservation(clientId, vehicleId, startDate, endDate, cost);
+        return reservationRepository.save(reservation);
+    }
+
     public List<Reservation> getAllReservations() { return reservationRepository.findAll(); }
+
     public Optional<Reservation> getReservationById(Long id) { return reservationRepository.findById(id); }
+
     public Reservation saveReservation(Reservation reservation) { return reservationRepository.save(reservation); }
+
     public void deleteReservation(Long id) { reservationRepository.deleteById(id); }
 
     public boolean isVehicleAvailable(int vehicleId, String startDate, String endDate) {

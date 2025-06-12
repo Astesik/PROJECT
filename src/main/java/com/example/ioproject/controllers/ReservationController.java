@@ -27,14 +27,12 @@ public class ReservationController {
     @Autowired
     private UserRepository userRepository;
 
-    // Endpoint: Pobierz listę rezerwacji (dla admina i moderatora)
     @GetMapping("/get")
     @PreAuthorize("hasRole('ADMIN')")
     public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
-    // Endpoint: Pobierz rezerwacje po ID (dla admina)
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public Optional<Reservation> getReservationById(@PathVariable Long id) {
@@ -42,7 +40,6 @@ public class ReservationController {
     }
 
 
-    // Endpoint: Zaktualizuj rezerwacje (dla admina)
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public Reservation updateReservation(@PathVariable Long id, @RequestBody Reservation reservation) {
@@ -50,7 +47,6 @@ public class ReservationController {
         return reservationService.saveReservation(reservation);
     }
 
-    // Endpoint: Usuń rezerwacje (dla admina)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteReservation(@PathVariable Long id) {
@@ -58,11 +54,9 @@ public class ReservationController {
     }
 
 
-    // Dodaj nową rezerwację (status PENDING domyslnie)
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) {
-        // Pobierz dane aktualnie zalogowanego usera
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -71,7 +65,6 @@ public class ReservationController {
             return ResponseEntity.status(404).body("User not found");
         }
 
-        // Nadpisz client_id - zawsze na zalogowanego usera
         reservation.setClient_id(user.getId());
 
         boolean available = reservationService.isVehicleAvailable(
@@ -81,7 +74,7 @@ public class ReservationController {
         );
         if (!available) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Rezerwacja nieudana: pojazd jest już zarezerwowana w tym terminie.");
+                    .body("Reservation unsuccessful: the vehicle is already booked for this date.");
         }
 
         Reservation saved = reservationService.createAndSavePendingReservation(
@@ -110,13 +103,10 @@ public class ReservationController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        // Pobierz usera
-
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
             return ResponseEntity.status(404).body("User not found");
         }
-        // Załóż, że masz pole client_id w Reservation, które jest typu Long i odpowiada user.getId()
         List<Reservation> reservations = reservationService.getReservationsByClientId(user.getId());
         return ResponseEntity.ok(reservations);
     }

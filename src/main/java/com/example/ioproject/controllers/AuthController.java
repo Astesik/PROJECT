@@ -86,7 +86,6 @@ public class AuthController {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    // Create new user's account
     User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
         encoder.encode(signUpRequest.getPassword()));
 
@@ -123,7 +122,7 @@ public class AuthController {
 
     User user = userRepository.findByEmail(email).orElse(null);
     if (user == null) {
-      String randomPassword = UUID.randomUUID().toString();  // wygeneruj randomowe haslo dla uzytkownika autoryzujacego sie przez google
+      String randomPassword = UUID.randomUUID().toString();
       user = new User(name, email, randomPassword);
       Role userRole = roleRepository.findByName(ERole.ROLE_USER)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

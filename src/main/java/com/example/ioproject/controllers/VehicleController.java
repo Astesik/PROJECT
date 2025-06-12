@@ -40,7 +40,6 @@ public class VehicleController {
         return vehicleService.getAllVehicles();
     }
 
-    // Endpoint: Pobierz pojazd po ID (dla wszystkich autoryzowanych użytkowników)
     @GetMapping("/get/{id}")
     public Optional<Vehicle> getVehicleById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
@@ -54,7 +53,6 @@ public class VehicleController {
         return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
     }
 
-    // Endpoint: Aktualizuj pojazd (tylko dla użytkowników z rolą ADMIN lub EMPLOYEE)
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
@@ -69,7 +67,6 @@ public class VehicleController {
         }
     }
 
-    // Endpoint: Usuń pojazd
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<HttpStatus> deleteVehicle(@PathVariable Long id) {

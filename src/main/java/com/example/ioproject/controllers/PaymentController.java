@@ -51,7 +51,7 @@ public class PaymentController {
                                               .setUnitAmount(request.getAmount() * 100L) // amount in grosze
                                               .setProductData(
                                                       SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                              .setName("Wypożyczenie auta: " + request.getCarName())
+                                                              .setName("Car rental: " + request.getCarName())
                                                               .build()
                                               )
                                               .build()

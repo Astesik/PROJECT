@@ -16,6 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for retrieving user-related data from the database.
+ * <p>
+ * Implements {@link UserDetailsService} for Spring Security authentication.
+ * Also provides utility methods for managing users and their roles.
+ * </p>
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
   @Autowired
@@ -24,6 +31,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Autowired
   RoleRepository roleRepository;
 
+  /**
+   * Loads user-specific data by username for authentication.
+   *
+   * @param username the username to search for
+   * @return a {@link UserDetails} object containing user credentials and authorities
+   * @throws UsernameNotFoundException if the user is not found
+   */
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -35,6 +49,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   public List<User> getAllUsers(){return userRepository.findAll();}
 
+  /**
+   * Retrieves a list of users along with their roles.
+   *
+   * @return a list of {@link UserWithRole} objects
+   */
   public List<UserWithRole> getUsersWithRoles() {
     List<User> users = userRepository.findAll();
 
@@ -56,6 +75,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   public void deleteUser(Long id) {userRepository.deleteById(id);}
 
+  /**
+   * Updates the user's username, email, and role.
+   *
+   * @param userWithRole a {@link UserWithRole} containing the updated user information
+   * @return the updated {@link UserWithRole}
+   * @throws RuntimeException if the user or role is not found
+   */
   public UserWithRole updateUser(UserWithRole userWithRole) {
 
     User user = userRepository.findById(userWithRole.getId())

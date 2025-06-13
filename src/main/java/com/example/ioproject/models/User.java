@@ -8,6 +8,11 @@ import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents an application user entity.
+ * Contains authentication and authorization details such as username, email, password, and assigned roles.
+ * Used in user registration, login, and role-based access control.
+ */
 @Entity
 @Table( name = "users", 
         uniqueConstraints = { 

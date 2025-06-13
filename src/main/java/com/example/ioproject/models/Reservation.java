@@ -2,6 +2,11 @@ package com.example.ioproject.models;
 
 import jakarta.persistence.*;
 
+/**
+ * Represents a reservation for a vehicle.
+ * Contains details about the rental period, associated user and vehicle,
+ * payment status, and cost.
+ */
 @Entity
 @Table( name = "reservations" )
 public class Reservation {

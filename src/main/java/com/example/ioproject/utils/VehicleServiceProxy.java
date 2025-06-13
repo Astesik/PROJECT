@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Proxy class for {@link VehicleService} that adds caching behavior for vehicle data.
+ * <p>
+ * Implements {@link IVehicleService} and delegates calls to the real service
+ * while caching the result of {@code getAllVehicles()} for a specified interval.
+ * </p>
+ */
 @Service
 @Primary
 public class VehicleServiceProxy implements IVehicleService{
@@ -21,11 +28,22 @@ public class VehicleServiceProxy implements IVehicleService{
     private LocalDateTime lastUpdated = LocalDateTime.MIN;
     private final Duration refreshInterval = Duration.ofSeconds(180);
 
+    /**
+     * Constructs a new {@code VehicleServiceProxy} with a reference to the real service.
+     *
+     * @param realService the actual {@link VehicleService} implementation to delegate to
+     */
     public VehicleServiceProxy(VehicleService realService) {
         this.realService = realService;
         System.out.println("✅ VehicleServiceProxy został utworzony!");
     }
 
+    /**
+     * Returns a list of all vehicles, using cached data if the cache is still valid.
+     * If the cache has expired, it fetches fresh data from the real service.
+     *
+     * @return a list of {@link Vehicle} objects
+     */
     @Override
     public List<Vehicle> getAllVehicles() {
         if (Duration.between(lastUpdated, LocalDateTime.now()).compareTo(refreshInterval) > 0) {

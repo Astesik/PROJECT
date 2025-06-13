@@ -1,5 +1,9 @@
 package com.example.ioproject.models;
 
+/**
+ * Represents a simplified user object including role information.
+ * Used for transferring user data along with their assigned role.
+ */
 public class UserWithRole {
     private Long id;
     private String username;

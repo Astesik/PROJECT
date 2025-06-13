@@ -9,6 +9,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class responsible for managing reservations.
+ * Provides methods to create, retrieve, update, and delete reservations,
+ * as well as handle payment statuses and vehicle availability.
+ */
 @Service
 public class ReservationService {
 
@@ -18,6 +23,16 @@ public class ReservationService {
     @Autowired
     private ReservationFactory reservationFactory;
 
+    /**
+     * Creates and saves a new reservation with "PENDING" status.
+     *
+     * @param clientId   the ID of the client
+     * @param vehicleId  the ID of the vehicle
+     * @param startDate  the reservation start date (as String)
+     * @param endDate    the reservation end date (as String)
+     * @param cost       the total cost of the reservation
+     * @return the saved {@link Reservation}
+     */
     public Reservation createAndSavePendingReservation(Long clientId, int vehicleId, String startDate, String endDate, double cost) {
         Reservation reservation = reservationFactory.createPendingReservation(clientId, vehicleId, startDate, endDate, cost);
         return reservationRepository.save(reservation);
@@ -31,6 +46,14 @@ public class ReservationService {
 
     public void deleteReservation(Long id) { reservationRepository.deleteById(id); }
 
+    /**
+     * Checks whether a vehicle is available for a given date range.
+     *
+     * @param vehicleId  the ID of the vehicle
+     * @param startDate  the start date to check
+     * @param endDate    the end date to check
+     * @return {@code true} if no conflicting reservations exist; {@code false} otherwise
+     */
     public boolean isVehicleAvailable(int vehicleId, String startDate, String endDate) {
         List<Reservation> conflicts = reservationRepository.findConflictingReservations(vehicleId, startDate, endDate);
         return conflicts.isEmpty();
@@ -57,6 +80,12 @@ public class ReservationService {
         });
     }
 
+    /**
+     * Sets the Stripe session ID for a reservation.
+     *
+     * @param id        the reservation ID
+     * @param sessionId the Stripe session ID to set
+     */
     public void setStripeSessionId(Long id, String sessionId) {
         reservationRepository.findById(id).ifPresent(res -> {
             res.setStripeSessionId(sessionId);

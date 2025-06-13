@@ -16,9 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Collections;
 
+/**
+ * Service for handling Google OAuth2 authentication logic.
+ * <p>
+ * This service is responsible for exchanging authorization codes
+ * for ID tokens and verifying Google ID tokens.
+ */
 @Service
 public class GoogleAuthService {
 
@@ -35,6 +40,11 @@ public class GoogleAuthService {
 
     private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
+    /**
+     * Constructs a {@code GoogleAuthService} with a Google ID token verifier.
+     *
+     * @param clientId the client ID used to verify Google ID tokens
+     */
     public GoogleAuthService(@Value("${google.client.id}") String clientId) {
         this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                 .setAudience(Collections.singletonList(clientId))
@@ -44,6 +54,13 @@ public class GoogleAuthService {
                 .build();
     }
 
+    /**
+     * Exchanges an authorization code received from the frontend
+     * for an ID token using Google's OAuth2 API.
+     *
+     * @param request the {@link GoogleRequest} containing the authorization code and scope
+     * @return the ID token if successful, or {@code null} if the request fails
+     */
     public String retriveIdToken(GoogleRequest request) {
         String code = request.getCode();
         String scope = request.getScope();
@@ -75,8 +92,6 @@ public class GoogleAuthService {
                 String accessToken = responseJson.get("access_token").asText();
                 String idToken = responseJson.get("id_token").asText();
 
-//                System.out.println("Access Token: " + accessToken);
-//                System.out.println("ID Token: " + idToken);
                 return idToken;
             } else {
                 System.err.println("Error exchanging code: " + response.getStatusCode());
@@ -89,12 +104,16 @@ public class GoogleAuthService {
         }
     }
 
+    /**
+     * Verifies the provided ID token string and returns its payload if valid.
+     *
+     * @param frontendTokenString the ID token string to verify
+     * @return the payload of the token if valid, or {@code null} if invalid
+     */
     public IdToken.Payload verify(String frontendTokenString) {
         try {
             GoogleIdToken idToken = verifier.verify(frontendTokenString);
-//            System.out.println("Verifying token: " + frontendTokenString);
             if (idToken != null) {
-//                System.out.println("Token payload: " + idToken.getPayload());
                 return idToken.getPayload();
             }
         } catch (Exception e) {

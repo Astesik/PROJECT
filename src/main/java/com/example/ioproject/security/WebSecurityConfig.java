@@ -17,12 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configuration class for Spring Security.
+ * <p>
+ * Configures authentication, password encoding, JWT filter, and security rules for HTTP requests.
+ * </p>
+ */
 @Configuration
 @EnableMethodSecurity
-// (securedEnabled = true,
-// jsr250Enabled = true,
-// prePostEnabled = true) // by default
-public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
@@ -34,11 +37,12 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
     return new AuthTokenFilter();
   }
 
-//  @Override
-//  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-//    authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//  }
-  
+  /**
+   * Configures the authentication provider using the custom {@link UserDetailsServiceImpl}
+   * and {@link BCryptPasswordEncoder} for password encoding.
+   *
+   * @return a configured {@link DaoAuthenticationProvider}
+   */
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
       DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -49,34 +53,36 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
       return authProvider;
   }
 
-//  @Bean
-//  @Override
-//  public AuthenticationManager authenticationManagerBean() throws Exception {
-//    return super.authenticationManagerBean();
-//  }
-  
+  /**
+   * Provides the {@link AuthenticationManager} bean used for authentication processes.
+   *
+   * @param authConfig the {@link AuthenticationConfiguration}
+   * @return an {@link AuthenticationManager} instance
+   * @throws Exception if authentication manager cannot be retrieved
+   */
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
     return authConfig.getAuthenticationManager();
   }
 
+  /**
+   * Defines the {@link PasswordEncoder} bean to be used throughout the application.
+   *
+   * @return a {@link BCryptPasswordEncoder} instance
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
-//  @Override
-//  protected void configure(HttpSecurity http) throws Exception {
-//    http.cors().and().csrf().disable()
-//      .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//      .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//      .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-//      .antMatchers("/api/test/**").permitAll()
-//      .anyRequest().authenticated();
-//
-//    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-//  }
-  
+  /**
+   * Defines the main security filter chain, configuring endpoint access rules, session policy,
+   * exception handling, and JWT filter insertion.
+   *
+   * @param http the {@link HttpSecurity} configuration
+   * @return the configured {@link SecurityFilterChain}
+   * @throws Exception if configuration fails
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())

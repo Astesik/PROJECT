@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Custom implementation of {@link UserDetails} used by Spring Security to authenticate and authorize users.
+ * <p>
+ * Wraps the {@link User} entity and converts roles to {@link GrantedAuthority} objects.
+ * </p>
+ */
 public class UserDetailsImpl implements UserDetails {
   private static final long serialVersionUID = 1L;
 
@@ -25,6 +31,15 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
+  /**
+   * Constructs a new {@code UserDetailsImpl} object.
+   *
+   * @param id          the user's ID
+   * @param username    the username
+   * @param email       the email address
+   * @param password    the encrypted password (ignored in JSON output)
+   * @param authorities the user's roles as Spring Security authorities
+   */
   public UserDetailsImpl(Long id, String username, String email, String password,
       Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
@@ -34,6 +49,12 @@ public class UserDetailsImpl implements UserDetails {
     this.authorities = authorities;
   }
 
+  /**
+   * Builds a {@code UserDetailsImpl} instance from a {@link User} entity.
+   *
+   * @param user the {@link User} entity
+   * @return a new {@code UserDetailsImpl} object
+   */
   public static UserDetailsImpl build(User user) {
     List<GrantedAuthority> authorities = user.getRoles().stream()
                                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -89,6 +110,12 @@ public class UserDetailsImpl implements UserDetails {
     return true;
   }
 
+  /**
+   * Compares this {@code UserDetailsImpl} to another object.
+   *
+   * @param o the object to compare
+   * @return {@code true} if the IDs are equal; {@code false} otherwise
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o)

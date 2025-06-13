@@ -2,6 +2,10 @@ package com.example.ioproject.models;
 
 import jakarta.persistence.*;
 
+/**
+ * Represents a maintenance task associated with a specific vehicle.
+ * Includes details such as the description, duration, cost, and completion status of the task.
+ */
 @Entity
 @Table(name = "maintenance_tasks")
 public class MaintenanceTask {

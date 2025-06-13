@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+/**
+ * Repository interface for managing {@link Vehicle} entities.
+ *
+ * Extends JpaRepository to provide CRUD operations, pagination, and sorting for Vehicle objects.
+ */
+ @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 }

@@ -15,11 +15,31 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Authentication entry point to handle unauthorized access attempts.
+ *
+ * This class is triggered when an unauthenticated user tries to access
+ * a secured REST endpoint without valid credentials.
+ *
+ * It returns a 401 Unauthorized HTTP response with a JSON body describing the error.
+ */
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
+  /**
+   * Commences an authentication scheme.
+   *
+   * This method is called when user authentication fails or is missing.
+   * It sends a JSON response with status 401 Unauthorized and error details.
+   *
+   * @param request the HttpServletRequest
+   * @param response the HttpServletResponse
+   * @param authException the exception that caused the invocation
+   * @throws IOException in case of an input/output error
+   * @throws ServletException in case of servlet error
+   */
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
       throws IOException, ServletException {

@@ -5,6 +5,11 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+
+/**
+ * Represents a vehicle available in the rental system.
+ * This class is mapped to the "vehicles" table in the database.
+ */
 @Entity
 @Table( name = "vehicles" )
 public class Vehicle {
@@ -27,7 +32,6 @@ public class Vehicle {
     @Column(length = 1000)
     private String description;
 
-    // Adding pricing fields
     private double daily_rate;
     private double weekly_rate;
     private double monthly_rate;
@@ -37,7 +41,7 @@ public class Vehicle {
     @Column(name = "feature")
     private List<String> features;
 
-    // Constructors
+
     public Vehicle() {
     }
 
@@ -121,11 +125,9 @@ public class Vehicle {
         this.status = status;
     }
 
-
     public double getWeekly_rate() { return weekly_rate; }
 
     public void setWeekly_rate(int price_per_day) {this.weekly_rate = price_per_day; }
-
 
     public double getMonthly_rate() { return monthly_rate; }
 

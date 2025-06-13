@@ -2,6 +2,10 @@ package com.example.ioproject.models;
 
 import jakarta.persistence.*;
 
+/**
+ * Represents a user role in the system.
+ * Used for defining access levels and permissions assigned to users.
+ */
 @Entity
 @Table(name = "roles")
 public class Role {

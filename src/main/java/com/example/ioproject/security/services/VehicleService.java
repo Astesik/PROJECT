@@ -12,6 +12,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class that provides operations for managing {@link Vehicle} entities.
+ * <p>
+ * Implements the {@link IVehicleService} interface and includes logic for determining
+ * the current availability status of vehicles based on reservations.
+ * </p>
+ */
 @Service
 public class VehicleService implements IVehicleService {
 
@@ -21,6 +28,16 @@ public class VehicleService implements IVehicleService {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    /**
+     * Retrieves all vehicles and updates their status based on today's date and reservation status.
+     * <ul>
+     *     <li>If a vehicle is under maintenance, its status is not changed.</li>
+     *     <li>If a vehicle has a "PAID" reservation overlapping with today, its status is set to "Rented".</li>
+     *     <li>Otherwise, its status is set to "Available".</li>
+     * </ul>
+     *
+     * @return a list of {@link Vehicle} objects with updated status
+     */
     @Override
     public List<Vehicle> getAllVehicles() {
         List<Vehicle> vehicles = vehicleRepository.findAll();
@@ -54,6 +71,13 @@ public class VehicleService implements IVehicleService {
         return vehicleRepository.findById(id);
     }
 
+    /**
+     * Saves the given vehicle to the repository. If the vehicle's ID is {@code 0}, it will be set to {@code null}
+     * so that the database auto-generates the ID.
+     *
+     * @param vehicle the {@link Vehicle} to save
+     * @return the saved {@link Vehicle} entity
+     */
     public Vehicle saveVehicle(Vehicle vehicle) {
         // For new vehicles, ensure the ID is null to let the database auto-generate it
         if (vehicle.getId() != null && vehicle.getId() == 0) {

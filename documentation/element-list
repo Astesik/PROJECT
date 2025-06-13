@@ -1,0 +1,10 @@
+com.example.ioproject
+com.example.ioproject.controllers
+com.example.ioproject.models
+com.example.ioproject.payload.request
+com.example.ioproject.payload.response
+com.example.ioproject.repository
+com.example.ioproject.security
+com.example.ioproject.security.jwt
+com.example.ioproject.security.services
+com.example.ioproject.utils

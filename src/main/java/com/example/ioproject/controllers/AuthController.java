@@ -32,12 +32,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-
+/**
+ * REST controller responsible for handling authentication-related endpoints.
+ * <p>
+ * Supports login, registration, Google OAuth authentication, password change,
+ * and retrieval of current authenticated user details.
+ * </p>
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
   @Autowired
   AuthenticationManager authenticationManager;
 
@@ -59,23 +65,35 @@ public class AuthController {
   @Autowired
   GoogleAuthService googleAuthService;
 
+  /**
+   * Authenticates a user using username and password credentials.
+   * If authentication is successful, returns a JWT token and user info.
+   *
+   * @param loginRequest the request body containing login credentials
+   * @return {@link JwtResponse} with user info and access token
+   */
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
     Authentication authentication = authenticationManager
-        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
     return ResponseEntity
-        .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+            .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
   }
 
+  /**
+   * Registers a new user account using the provided signup request.
+   *
+   * @param signUpRequest the request body with registration data
+   * @return a {@link MessageResponse} indicating result
+   */
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -87,7 +105,7 @@ public class AuthController {
     }
 
     User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
-        encoder.encode(signUpRequest.getPassword()));
+            encoder.encode(signUpRequest.getPassword()));
 
     Set<String> strRoles = signUpRequest.getRole();
     Set<Role> roles = new HashSet<>();
@@ -102,9 +120,15 @@ public class AuthController {
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
+  /**
+   * Authenticates or registers a user using Google Sign-In.
+   * Verifies Google ID token and creates an account if needed.
+   *
+   * @param request contains the Google ID token and client info
+   * @return {@link JwtResponse} if successful, or error response
+   */
   @PostMapping("/google")
-  public ResponseEntity<?> authWithGoogle(@Valid @RequestBody GoogleRequest request){
-
+  public ResponseEntity<?> authWithGoogle(@Valid @RequestBody GoogleRequest request) {
     String IdToken = googleAuthService.retriveIdToken(request);
 
     var payload = googleAuthService.verify(IdToken);
@@ -144,6 +168,11 @@ public class AuthController {
             .ok(new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail(), roles));
   }
 
+  /**
+   * Returns the currently authenticated user’s information.
+   *
+   * @return the current user or 404 if not found
+   */
   @GetMapping("/me")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> getCurrentUser() {
@@ -154,11 +183,18 @@ public class AuthController {
     if (user == null) {
       return ResponseEntity.status(404).body("User not found");
     }
-    // Usuń hasło z odpowiedzi!
-    user.setPassword(null);
+
+    user.setPassword(null); // Avoid returning password in response
     return ResponseEntity.ok(user);
   }
 
+  /**
+   * Allows the authenticated user to change their password,
+   * with protection against brute-force attacks.
+   *
+   * @param request contains old and new password
+   * @return success or error message
+   */
   @PostMapping("/change-password")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
@@ -169,17 +205,21 @@ public class AuthController {
       long left = passwordChangeAttemptService.getBlockSeconds(username);
       return ResponseEntity.status(429).body(new MessageResponse("Too many failed attempts. Try again in " + left + " seconds."));
     }
+
     User user = userRepository.findByUsername(username).orElse(null);
     if (user == null) {
       return ResponseEntity.status(404).body(new MessageResponse("User not found"));
     }
+
     if (!encoder.matches(request.getOldPassword(), user.getPassword())) {
       passwordChangeAttemptService.recordFailed(username);
       return ResponseEntity.badRequest().body(new MessageResponse("Current password is incorrect"));
     }
+
     passwordChangeAttemptService.recordSuccess(username);
     user.setPassword(encoder.encode(request.getNewPassword()));
     userRepository.save(user);
     return ResponseEntity.ok(new MessageResponse("Password changed successfully!"));
   }
 }
+

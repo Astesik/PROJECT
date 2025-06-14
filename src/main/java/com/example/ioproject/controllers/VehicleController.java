@@ -89,7 +89,7 @@ public class VehicleController {
      * @return the updated {@link Vehicle} object or 404 if not found
      */
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('MECHANIC')")
     public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
         Optional<Vehicle> vehicleData = vehicleService.getVehicleById(id);
 
@@ -128,7 +128,7 @@ public class VehicleController {
      * @return the created {@link MaintenanceTask} object
      */
     @PostMapping("/maintenance-tasks")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC') or hasRole('MODERATOR')")
     public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTask maintenanceTask) {
         MaintenanceTask savedMaintenance = maintenanceService.saveMaintenance(maintenanceTask);
         return new ResponseEntity<>(savedMaintenance, HttpStatus.CREATED);
@@ -141,7 +141,7 @@ public class VehicleController {
      * @return a list of all {@link MaintenanceTask} objects
      */
     @GetMapping("/maintenance-tasks")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC') or hasRole('MODERATOR')")
     public List<MaintenanceTask> getMaintenanceTasks() {
         return maintenanceService.getAllMaintenanceTasks();
     }
@@ -155,7 +155,7 @@ public class VehicleController {
      * @return the updated {@link MaintenanceTask} or 404 if not found
      */
     @PutMapping("/maintenance-tasks/update/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC') or hasRole('MODERATOR')")
     public ResponseEntity<MaintenanceTask> updateMaintenanceTAsk(@PathVariable Long id, @RequestBody MaintenanceTask maintenanceTask) {
         Optional<MaintenanceTask> maintenanceData = maintenanceService.getMaintenanceById(id);
 

@@ -3,7 +3,7 @@ package com.example.ioproject.security.services;
 import com.example.ioproject.models.ERole;
 import com.example.ioproject.models.Role;
 import com.example.ioproject.models.User;
-import com.example.ioproject.models.UserWithRole;
+import com.example.ioproject.payload.dtos.UserWithRole;
 import com.example.ioproject.repository.RoleRepository;
 import com.example.ioproject.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

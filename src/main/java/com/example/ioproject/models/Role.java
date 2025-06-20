@@ -1,11 +1,19 @@
 package com.example.ioproject.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents a user role in the system.
  * Used for defining access levels and permissions assigned to users.
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -17,27 +25,4 @@ public class Role {
   @Column(length = 20)
   private ERole name;
 
-  public Role() {
-
-  }
-
-  public Role(ERole name) {
-    this.name = name;
-  }
-
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public ERole getName() {
-    return name;
-  }
-
-  public void setName(ERole name) {
-    this.name = name;
-  }
 }

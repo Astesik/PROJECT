@@ -1,10 +1,8 @@
 package com.example.ioproject.controllers;
 
 import com.example.ioproject.models.*;
-import com.example.ioproject.payload.response.MessageResponse;
+import com.example.ioproject.payload.dtos.UserWithRole;
 import com.example.ioproject.repository.RoleRepository;
-import com.example.ioproject.repository.UserRepository;
-import com.example.ioproject.security.services.MaintenanceService;
 import com.example.ioproject.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * REST controller for administrative operations on users.

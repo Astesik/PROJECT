@@ -1,8 +1,11 @@
 package com.example.ioproject.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -10,6 +13,10 @@ import java.util.List;
  * Represents a vehicle available in the rental system.
  * This class is mapped to the "vehicles" table in the database.
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table( name = "vehicles" )
 public class Vehicle {
@@ -42,9 +49,6 @@ public class Vehicle {
     private List<String> features;
 
 
-    public Vehicle() {
-    }
-
     public Vehicle(String make, String model, int production_year, String license_plate,
                    String engineType, String vehicle_type, int mileage, String status,
                    String image_url, String description, List<String> features,
@@ -63,81 +67,5 @@ public class Vehicle {
         this.daily_rate = daily_rate;
         this.weekly_rate = weekly_rate;
         this.monthly_rate = monthly_rate;
-    }
-
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getMake() { return make; }
-
-    public void setMake(String make) { this.make = make; }
-
-    public String getModel() { return model; }
-
-    public void setModel(String model) { this.model = model; }
-
-    public int getProduction_year() { return production_year; }
-
-    public void setProduction_year(int production_year) { this.production_year = production_year; }
-
-    public String getLicense_plate() { return license_plate; }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setLicense_plate(String license_plate) { this.license_plate = license_plate; }
-
-    public String getVehicle_type() { return vehicle_type; }
-
-    public void setVehicle_type(String vehicle_type) { this.vehicle_type = vehicle_type; }
-
-    public String getEngine_type() { return engine_type; }
-
-    public void setEngine_type(String engine_type) { this.engine_type = engine_type; }
-
-    public int getMileage() { return mileage; }
-
-    public void setMileage(int mileage) { this.mileage = mileage; }
-
-    public double getDaily_rate() { return daily_rate; }
-
-    public void setDaily_rate(int price_per_day) {this.daily_rate = price_per_day; }
-
-    public String getImage_url() {
-        return image_url;
-    }
-
-    public void setImage_url(String image_path) {
-        this.image_url = image_path;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public double getWeekly_rate() { return weekly_rate; }
-
-    public void setWeekly_rate(int price_per_day) {this.weekly_rate = price_per_day; }
-
-    public double getMonthly_rate() { return monthly_rate; }
-
-    public void setMonthly_rate(int price_per_day) {this.monthly_rate = price_per_day; }
-
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<String> features) {
-        this.features = features;
     }
 }

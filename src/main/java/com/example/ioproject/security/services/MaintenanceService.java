@@ -1,13 +1,14 @@
 package com.example.ioproject.security.services;
 
 import com.example.ioproject.models.MaintenanceTask;
-import com.example.ioproject.models.Vehicle;
+import com.example.ioproject.payload.dtos.MaintenanceTaskDTO;
 import com.example.ioproject.repository.MaintenanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service class responsible for managing vehicle maintenance tasks.
@@ -20,8 +21,21 @@ public class MaintenanceService {
     @Autowired
     private MaintenanceRepository maintenanceRepository;
 
-    public List<MaintenanceTask> getAllMaintenanceTasks() {
-        return maintenanceRepository.findAll();
+    public List<MaintenanceTaskDTO> getAllMaintenanceTasks() {
+        List<MaintenanceTask> tasks = maintenanceRepository.findAll();
+
+        return tasks.stream()
+                .map(task -> new MaintenanceTaskDTO(
+                        task.getId(),
+                        task.getVehicle().getId(),
+                        task.getVehicle().getLicense_plate(),
+                        task.getDescription(),
+                        task.getStart_date(),
+                        task.getEnd_date(),
+                        task.getCost(),
+                        task.getDone()
+                ))
+                .collect(Collectors.toList());
     }
 
     public Optional<MaintenanceTask> getMaintenanceById(Long id) {

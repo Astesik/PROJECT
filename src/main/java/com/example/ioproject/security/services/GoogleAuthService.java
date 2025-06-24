@@ -46,11 +46,9 @@ public class GoogleAuthService {
      * @param clientId the client ID used to verify Google ID tokens
      */
     public GoogleAuthService(@Value("${google.client.id}") String clientId) {
-        this.verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+        this.verifier = new GoogleIdTokenVerifier
+                .Builder(new NetHttpTransport(), new GsonFactory())
                 .setAudience(Collections.singletonList(clientId))
-
-
-
                 .build();
     }
 

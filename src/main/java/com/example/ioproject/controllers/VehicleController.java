@@ -3,28 +3,18 @@ package com.example.ioproject.controllers;
 import com.example.ioproject.models.MaintenanceTask;
 import com.example.ioproject.models.Vehicle;
 import com.example.ioproject.payload.dtos.MaintenanceTaskDTO;
+import com.example.ioproject.payload.dtos.VehicleDTO;
 import com.example.ioproject.security.services.MaintenanceService;
 import com.example.ioproject.security.services.VehicleService;
-import com.example.ioproject.utils.IVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,35 +26,39 @@ public class VehicleController {
     private VehicleService vehicleService;
 
     @Autowired
-    MaintenanceService maintenanceService;
+    private MaintenanceService maintenanceService;
 
     @GetMapping("/get")
-    public List<Vehicle> getAllVehicles() {
-        return vehicleService.getAllVehicles();
+    public List<VehicleDTO> getAllVehicles() {
+        return vehicleService.getAllVehicles()
+                .stream()
+                .map(vehicleService::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/get/{id}")
-    public Optional<Vehicle> getVehicleById(@PathVariable Long id) {
-        return vehicleService.getVehicleById(id);
+    public ResponseEntity<VehicleDTO> getVehicleById(@PathVariable Long id) {
+        Optional<Vehicle> vehicleOpt = vehicleService.getVehicleById(id);
+        return vehicleOpt.map(vehicle -> ResponseEntity.ok(vehicleService.toDTO(vehicle)))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle vehicle) {
-        Vehicle savedVehicle = vehicleService.saveVehicle(vehicle);
-        return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
+    public ResponseEntity<VehicleDTO> addVehicle(@RequestBody VehicleDTO dto) {
+        Vehicle saved = vehicleService.saveVehicle(vehicleService.fromDTO(dto));
+        return new ResponseEntity<>(vehicleService.toDTO(saved), HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @RequestBody Vehicle vehicle) {
-        Optional<Vehicle> vehicleData = vehicleService.getVehicleById(id);
-
-        if (vehicleData.isPresent()) {
-            vehicle.setId(id);
-            Vehicle updatedVehicle = vehicleService.saveVehicle(vehicle);
-            return new ResponseEntity<>(updatedVehicle, HttpStatus.OK);
+    public ResponseEntity<VehicleDTO> updateVehicle(@PathVariable Long id, @RequestBody VehicleDTO dto) {
+        Optional<Vehicle> vehicleOpt = vehicleService.getVehicleById(id);
+        if (vehicleOpt.isPresent()) {
+            Vehicle updated = vehicleService.fromDTO(dto);
+            updated.setId(id);
+            Vehicle saved = vehicleService.saveVehicle(updated);
+            return ResponseEntity.ok(vehicleService.toDTO(saved));
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -84,7 +78,6 @@ public class VehicleController {
     @PostMapping("/maintenance-tasks")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
     public ResponseEntity<MaintenanceTask> createMaintenanceTask(@RequestBody MaintenanceTaskDTO dto) {
-
         Vehicle vehicle = vehicleService.getVehicleById(dto.getVehicleId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
 
@@ -103,11 +96,9 @@ public class VehicleController {
     @PutMapping("/maintenance-tasks/update/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MECHANIC')")
     public ResponseEntity<MaintenanceTask> updateMaintenanceTask(@PathVariable Long id, @RequestBody MaintenanceTaskDTO dto) {
-
         Optional<MaintenanceTask> maintenanceData = maintenanceService.getMaintenanceById(dto.getId());
 
         if (maintenanceData.isPresent()) {
-
             MaintenanceTask maintenanceTask = new MaintenanceTask(dto, maintenanceData.get().getVehicle());
             maintenanceTask.setId(id);
             MaintenanceTask updatedTask = maintenanceService.saveMaintenance(maintenanceTask);

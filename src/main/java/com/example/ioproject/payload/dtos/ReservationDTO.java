@@ -15,6 +15,7 @@ public class ReservationDTO {
     private Long id;
     private Long clientId;
     private int vehicleId;
+    private String licensePlate;
     private String startDate;
     private String endDate;
     private double cost;

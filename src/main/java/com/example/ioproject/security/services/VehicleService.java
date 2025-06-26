@@ -7,8 +7,6 @@ import com.example.ioproject.repository.VehicleRepository;
 import com.example.ioproject.utils.IVehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.ioproject.payload.dtos.VehicleDTO;
-
 
 import java.time.LocalDate;
 import java.util.List;
@@ -88,44 +86,7 @@ public class VehicleService implements IVehicleService {
 
         return vehicleRepository.save(vehicle);
     }
-    public VehicleDTO toDTO(Vehicle vehicle) {
-        return new VehicleDTO(
-                vehicle.getId(),
-                vehicle.getMake(),
-                vehicle.getModel(),
-                vehicle.getProduction_year(),
-                vehicle.getLicense_plate(),
-                vehicle.getEngine_type(),
-                vehicle.getVehicle_type(),
-                vehicle.getMileage(),
-                vehicle.getStatus(),
-                vehicle.getImage_url(),
-                vehicle.getDescription(),
-                vehicle.getDaily_rate(),
-                vehicle.getWeekly_rate(),
-                vehicle.getMonthly_rate(),
-                vehicle.getFeatures()
-        );
-    }
 
-    public Vehicle fromDTO(VehicleDTO dto) {
-        return new Vehicle(
-                dto.getMake(),
-                dto.getModel(),
-                dto.getProductionYear(),
-                dto.getLicensePlate(),
-                dto.getEngineType(),
-                dto.getVehicleType(),
-                dto.getMileage(),
-                dto.getStatus(),
-                dto.getImageUrl(),
-                dto.getDescription(),
-                dto.getFeatures(),
-                dto.getDailyRate(),
-                dto.getWeeklyRate(),
-                dto.getMonthlyRate()
-        );
-    }
     public void deleteVehicle(Long id) {
         vehicleRepository.deleteById(id);
     }

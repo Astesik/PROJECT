@@ -7,6 +7,7 @@ import com.example.ioproject.payload.request.ChangePasswordRequest;
 import com.example.ioproject.payload.request.GoogleRequest;
 import com.example.ioproject.payload.request.LoginRequest;
 import com.example.ioproject.payload.request.SignupRequest;
+import com.example.ioproject.payload.response.GoogleResponse;
 import com.example.ioproject.payload.response.JwtResponse;
 import com.example.ioproject.payload.response.MessageResponse;
 import com.example.ioproject.repository.RoleRepository;
@@ -17,6 +18,7 @@ import com.example.ioproject.security.services.PasswordChangeAttemptService;
 import com.example.ioproject.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -145,13 +147,10 @@ public class AuthController {
     }
 
     User user = userRepository.findByEmail(email).orElse(null);
+
     if (user == null) {
-      String randomPassword = UUID.randomUUID().toString();
-      user = new User(name, email, randomPassword);
-      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      user.setRoles(Set.of(userRole));
-      userRepository.save(user);
+      GoogleResponse googleResponse = new GoogleResponse(name, email, false);
+      return new ResponseEntity<>(googleResponse, HttpStatus.OK);
     }
 
     UserDetailsImpl userDetails = UserDetailsImpl.build(user);

@@ -1,6 +1,8 @@
 package com.example.ioproject.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Request payload used for user authentication.
@@ -9,6 +11,8 @@ import jakarta.validation.constraints.NotBlank;
  * Contains username and password credentials.
  * </p>
  */
+@Getter
+@Setter
 public class LoginRequest {
 
   /**
@@ -24,40 +28,4 @@ public class LoginRequest {
    */
   @NotBlank
   private String password;
-
-  /**
-   * Gets the username.
-   *
-   * @return the username
-   */
-  public String getUsername() {
-    return username;
-  }
-
-  /**
-   * Sets the username.
-   *
-   * @param username the user's login name
-   */
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  /**
-   * Gets the password.
-   *
-   * @return the password
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Sets the password.
-   *
-   * @param password the user's password
-   */
-  public void setPassword(String password) {
-    this.password = password;
-  }
 }

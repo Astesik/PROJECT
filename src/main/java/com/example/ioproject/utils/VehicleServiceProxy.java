@@ -4,7 +4,6 @@ import com.example.ioproject.models.Vehicle;
 import com.example.ioproject.security.services.VehicleService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

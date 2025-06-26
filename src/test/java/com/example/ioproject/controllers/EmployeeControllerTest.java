@@ -1,7 +1,7 @@
 package com.example.ioproject.controllers;
 
 import com.example.ioproject.models.User;
-import com.example.ioproject.models.UserWithRole;
+import com.example.ioproject.payload.dtos.UserWithRole;
 import com.example.ioproject.repository.RoleRepository;
 import com.example.ioproject.security.services.UserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

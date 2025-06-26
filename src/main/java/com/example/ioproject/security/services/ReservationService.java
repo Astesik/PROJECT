@@ -1,7 +1,10 @@
 package com.example.ioproject.security.services;
 
 import com.example.ioproject.models.Reservation;
+import com.example.ioproject.models.Vehicle;
+import com.example.ioproject.payload.dtos.ReservationDTO;
 import com.example.ioproject.repository.ReservationRepository;
+import com.example.ioproject.repository.VehicleRepository;
 import com.example.ioproject.utils.ReservationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,11 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service class responsible for managing reservations.
- * Provides methods to create, retrieve, update, and delete reservations,
- * as well as handle payment statuses and vehicle availability.
- */
 @Service
 public class ReservationService {
 
@@ -23,37 +21,30 @@ public class ReservationService {
     @Autowired
     private ReservationFactory reservationFactory;
 
-    /**
-     * Creates and saves a new reservation with "PENDING" status.
-     *
-     * @param clientId   the ID of the client
-     * @param vehicleId  the ID of the vehicle
-     * @param startDate  the reservation start date (as String)
-     * @param endDate    the reservation end date (as String)
-     * @param cost       the total cost of the reservation
-     * @return the saved {@link Reservation}
-     */
+    @Autowired
+    private VehicleRepository vehicleRepository; // <== Dodane do pobierania licensePlate
+
     public Reservation createAndSavePendingReservation(Long clientId, int vehicleId, String startDate, String endDate, double cost) {
         Reservation reservation = reservationFactory.createPendingReservation(clientId, vehicleId, startDate, endDate, cost);
         return reservationRepository.save(reservation);
     }
 
-    public List<Reservation> getAllReservations() { return reservationRepository.findAll(); }
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
 
-    public Optional<Reservation> getReservationById(Long id) { return reservationRepository.findById(id); }
+    public Optional<Reservation> getReservationById(Long id) {
+        return reservationRepository.findById(id);
+    }
 
-    public Reservation saveReservation(Reservation reservation) { return reservationRepository.save(reservation); }
+    public Reservation saveReservation(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
 
-    public void deleteReservation(Long id) { reservationRepository.deleteById(id); }
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
+    }
 
-    /**
-     * Checks whether a vehicle is available for a given date range.
-     *
-     * @param vehicleId  the ID of the vehicle
-     * @param startDate  the start date to check
-     * @param endDate    the end date to check
-     * @return {@code true} if no conflicting reservations exist; {@code false} otherwise
-     */
     public boolean isVehicleAvailable(int vehicleId, String startDate, String endDate) {
         List<Reservation> conflicts = reservationRepository.findConflictingReservations(vehicleId, startDate, endDate);
         return conflicts.isEmpty();
@@ -80,12 +71,6 @@ public class ReservationService {
         });
     }
 
-    /**
-     * Sets the Stripe session ID for a reservation.
-     *
-     * @param id        the reservation ID
-     * @param sessionId the Stripe session ID to set
-     */
     public void setStripeSessionId(Long id, String sessionId) {
         reservationRepository.findById(id).ifPresent(res -> {
             res.setStripeSessionId(sessionId);
@@ -99,5 +84,43 @@ public class ReservationService {
 
     public List<Reservation> getReservationsByClientId(Long clientId) {
         return reservationRepository.findByClientId(clientId);
+    }
+
+    // =========================
+    // DTO mapping
+    // =========================
+
+    public ReservationDTO toDTO(Reservation res) {
+        String licensePlate = "";
+
+        Optional<Vehicle> vehicleOpt = vehicleRepository.findById((long) res.getVehicle_id());
+        if (vehicleOpt.isPresent()) {
+            licensePlate = vehicleOpt.get().getLicense_plate();
+        }
+
+        return new ReservationDTO(
+                res.getId(),
+                res.getClient_id(),
+                res.getVehicle_id(),
+                licensePlate,
+                res.getStart_date(),
+                res.getEnd_date(),
+                res.getCost(),
+                res.getStatus(),
+                res.getStripeSessionId()
+        );
+    }
+
+    public Reservation fromDTO(ReservationDTO dto) {
+        Reservation res = new Reservation();
+        res.setId(dto.getId());
+        res.setClient_id(dto.getClientId());
+        res.setVehicle_id(dto.getVehicleId());
+        res.setStart_date(dto.getStartDate());
+        res.setEnd_date(dto.getEndDate());
+        res.setCost(dto.getCost());
+        res.setStatus(dto.getStatus());
+        res.setStripeSessionId(dto.getStripeSessionId());
+        return res;
     }
 }

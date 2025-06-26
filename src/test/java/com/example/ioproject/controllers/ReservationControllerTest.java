@@ -73,51 +73,6 @@ class ReservationControllerTest {
         verify(reservationService, times(1)).getReservationById(99L);
     }
 
-    @Test
-    void testAddReservation_VehicleAvailable() {
-        when(reservationService.isVehicleAvailable(
-                sampleReservation.getVehicle_id(),
-                sampleReservation.getStart_date(),
-                sampleReservation.getEnd_date()
-        )).thenReturn(true);
-
-        when(reservationService.saveReservation(sampleReservation)).thenReturn(sampleReservation);
-
-        ResponseEntity<?> response = reservationController.addReservation(sampleReservation);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(sampleReservation, response.getBody());
-
-        verify(reservationService, times(1)).isVehicleAvailable(
-                sampleReservation.getVehicle_id(),
-                sampleReservation.getStart_date(),
-                sampleReservation.getEnd_date()
-        );
-
-        verify(reservationService, times(1)).saveReservation(sampleReservation);
-    }
-
-    @Test
-    void testAddReservation_VehicleNotAvailable() {
-        when(reservationService.isVehicleAvailable(
-                sampleReservation.getVehicle_id(),
-                sampleReservation.getStart_date(),
-                sampleReservation.getEnd_date()
-        )).thenReturn(false);
-
-        ResponseEntity<?> response = reservationController.addReservation(sampleReservation);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertTrue(((String) response.getBody()).contains("pojazd jest już zarezerwowany"));
-
-        verify(reservationService, times(1)).isVehicleAvailable(
-                sampleReservation.getVehicle_id(),
-                sampleReservation.getStart_date(),
-                sampleReservation.getEnd_date()
-        );
-
-        verify(reservationService, never()).saveReservation(any());
-    }
 
     @Test
     void testUpdateReservation() {

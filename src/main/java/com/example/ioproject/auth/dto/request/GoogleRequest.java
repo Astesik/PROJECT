@@ -1,4 +1,4 @@
-package com.example.ioproject.payload.request;
+package com.example.ioproject.auth.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

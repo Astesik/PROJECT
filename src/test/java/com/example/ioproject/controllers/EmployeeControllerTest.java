@@ -1,9 +1,9 @@
 package com.example.ioproject.controllers;
 
-import com.example.ioproject.models.User;
-import com.example.ioproject.payload.dtos.UserWithRole;
-import com.example.ioproject.repository.RoleRepository;
-import com.example.ioproject.security.services.UserDetailsServiceImpl;
+import com.example.ioproject.auth.model.User;
+import com.example.ioproject.auth.dto.UserWithRole;
+import com.example.ioproject.auth.repository.RoleRepository;
+import com.example.ioproject.auth.security.UserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class EmployeeControllerTest {
     private EmployeeController employeeController;
 
     @Mock
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Mock
     private RoleRepository roleRepository;

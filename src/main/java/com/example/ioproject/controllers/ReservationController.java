@@ -1,9 +1,9 @@
 package com.example.ioproject.controllers;
 
 import com.example.ioproject.models.Reservation;
-import com.example.ioproject.models.User;
+import com.example.ioproject.auth.model.User;
 import com.example.ioproject.payload.dtos.ReservationDTO;
-import com.example.ioproject.repository.UserRepository;
+import com.example.ioproject.auth.repository.UserRepository;
 import com.example.ioproject.security.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

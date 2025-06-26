@@ -1,4 +1,4 @@
-package com.example.ioproject.payload.response;
+package com.example.ioproject.auth.dto.response;
 
 /**
  * Generic response payload used to return a simple message to the client.

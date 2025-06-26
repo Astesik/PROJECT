@@ -1,8 +1,8 @@
-package com.example.ioproject.security;
+package com.example.ioproject.auth.config;
 
-import com.example.ioproject.security.jwt.AuthEntryPointJwt;
-import com.example.ioproject.security.jwt.AuthTokenFilter;
-import com.example.ioproject.security.services.UserDetailsServiceImpl;
+import com.example.ioproject.auth.security.UserDetailsService;
+import com.example.ioproject.auth.security.jwt.AuthEntryPointJwt;
+import com.example.ioproject.auth.security.jwt.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class WebSecurityConfig {
   @Autowired
-  UserDetailsServiceImpl userDetailsService;
+  UserDetailsService userDetailsService;
 
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
@@ -38,7 +38,7 @@ public class WebSecurityConfig {
   }
 
   /**
-   * Configures the authentication provider using the custom {@link UserDetailsServiceImpl}
+   * Configures the authentication provider using the custom {@link UserDetailsService}
    * and {@link BCryptPasswordEncoder} for password encoding.
    *
    * @return a configured {@link DaoAuthenticationProvider}

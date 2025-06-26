@@ -1,4 +1,4 @@
-package com.example.ioproject.payload.request;
+package com.example.ioproject.auth.dto.request;
 
 /**
  * Request payload used for changing a user's password.

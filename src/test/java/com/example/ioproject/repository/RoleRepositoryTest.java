@@ -1,8 +1,8 @@
 package com.example.ioproject.repository;
 
-import com.example.ioproject.models.ERole;
-import com.example.ioproject.models.Role;
-import org.junit.jupiter.api.DisplayName;
+import com.example.ioproject.auth.model.ERole;
+import com.example.ioproject.auth.model.Role;
+import com.example.ioproject.auth.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

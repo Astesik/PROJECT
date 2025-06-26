@@ -1,4 +1,4 @@
-package com.example.ioproject.payload.response;
+package com.example.ioproject.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

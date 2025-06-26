@@ -1,6 +1,6 @@
-package com.example.ioproject.security.jwt;
+package com.example.ioproject.auth.security.jwt;
 
-import com.example.ioproject.security.services.UserDetailsImpl;
+import com.example.ioproject.auth.security.UserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
@@ -33,15 +34,18 @@ public class JwtUtils {
    * @return the generated JWT token as a String
    */
   public String generateJwtToken(Authentication authentication) {
-
-    UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    UserDetails user = (UserDetails) authentication.getPrincipal();
 
     return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(key(), SignatureAlgorithm.HS256)
-        .compact();
+            .setSubject(user.getUsername())
+            .claim("id", user.getId())
+            .claim("email", user.getEmail())
+            .claim("roles", user.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority).toList())
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+            .signWith(key(), SignatureAlgorithm.HS256)
+            .compact();
   }
 
   /**

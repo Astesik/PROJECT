@@ -1,4 +1,4 @@
-package com.example.ioproject.payload.request;
+package com.example.ioproject.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

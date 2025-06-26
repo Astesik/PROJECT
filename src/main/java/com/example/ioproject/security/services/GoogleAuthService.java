@@ -1,6 +1,6 @@
 package com.example.ioproject.security.services;
 
-import com.example.ioproject.payload.request.GoogleRequest;
+import com.example.ioproject.auth.dto.request.GoogleRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.openidconnect.IdToken;

@@ -1,4 +1,4 @@
-package com.example.ioproject.security.jwt;
+package com.example.ioproject.auth.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

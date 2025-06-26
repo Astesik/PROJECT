@@ -1,25 +1,24 @@
 package com.example.ioproject.controllers;
 
-import com.example.ioproject.models.ERole;
-import com.example.ioproject.models.Role;
-import com.example.ioproject.models.User;
-import com.example.ioproject.payload.request.GoogleRequest;
-import com.example.ioproject.payload.request.LoginRequest;
-import com.example.ioproject.payload.request.SignupRequest;
-import com.example.ioproject.payload.response.JwtResponse;
-import com.example.ioproject.payload.response.MessageResponse;
-import com.example.ioproject.repository.RoleRepository;
-import com.example.ioproject.repository.UserRepository;
-import com.example.ioproject.security.jwt.JwtUtils;
+import com.example.ioproject.auth.controller.AuthController;
+import com.example.ioproject.auth.model.ERole;
+import com.example.ioproject.auth.model.Role;
+import com.example.ioproject.auth.model.User;
+import com.example.ioproject.auth.dto.request.LoginRequest;
+import com.example.ioproject.auth.dto.request.SignupRequest;
+import com.example.ioproject.auth.dto.response.JwtResponse;
+import com.example.ioproject.auth.dto.response.MessageResponse;
+import com.example.ioproject.auth.repository.RoleRepository;
+import com.example.ioproject.auth.repository.UserRepository;
+import com.example.ioproject.auth.security.jwt.JwtUtils;
 import com.example.ioproject.security.services.GoogleAuthService;
-import com.example.ioproject.security.services.UserDetailsImpl;
+import com.example.ioproject.auth.security.UserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -67,7 +66,7 @@ class AuthControllerTest {
         loginRequest.setPassword("testpass");
 
         Authentication authentication = mock(Authentication.class);
-        UserDetailsImpl userDetails = new UserDetailsImpl(1L, "testuser", "test@example.com", "hashedpass", List.of());
+        UserDetails userDetails = new UserDetails(1L, "testuser", "test@example.com", "hashedpass", List.of());
 
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);

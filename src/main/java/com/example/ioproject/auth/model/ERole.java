@@ -1,4 +1,4 @@
-package com.example.ioproject.models;
+package com.example.ioproject.auth.model;
 
 /**
  * Enum representing the different roles available in the system.

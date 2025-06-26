@@ -1,14 +1,12 @@
-package com.example.ioproject.security.services;
+package com.example.ioproject.auth.security;
 
-import com.example.ioproject.models.ERole;
-import com.example.ioproject.models.Role;
-import com.example.ioproject.models.User;
-import com.example.ioproject.payload.dtos.UserWithRole;
-import com.example.ioproject.repository.RoleRepository;
-import com.example.ioproject.repository.UserRepository;
+import com.example.ioproject.auth.model.ERole;
+import com.example.ioproject.auth.model.Role;
+import com.example.ioproject.auth.model.User;
+import com.example.ioproject.auth.dto.UserWithRole;
+import com.example.ioproject.auth.repository.RoleRepository;
+import com.example.ioproject.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +17,12 @@ import java.util.stream.Collectors;
 /**
  * Service responsible for retrieving user-related data from the database.
  * <p>
- * Implements {@link UserDetailsService} for Spring Security authentication.
+ * Implements {@link org.springframework.security.core.userdetails.UserDetailsService} for Spring Security authentication.
  * Also provides utility methods for managing users and their roles.
  * </p>
  */
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
   @Autowired
   UserRepository userRepository;
 
@@ -35,16 +33,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
    * Loads user-specific data by username for authentication.
    *
    * @param username the username to search for
-   * @return a {@link UserDetails} object containing user credentials and authorities
+   * @return a {@link org.springframework.security.core.userdetails.UserDetails} object containing user credentials and authorities
    * @throws UsernameNotFoundException if the user is not found
    */
   @Override
   @Transactional
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-    return UserDetailsImpl.build(user);
+    return UserDetails.build(user);
   }
 
   public List<User> getAllUsers(){return userRepository.findAll();}

@@ -1,6 +1,6 @@
-package com.example.ioproject.payload.dtos;
+package com.example.ioproject.auth.dto;
 
-import com.example.ioproject.models.ERole;
+import com.example.ioproject.auth.model.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

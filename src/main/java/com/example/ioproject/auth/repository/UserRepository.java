@@ -1,7 +1,6 @@
-package com.example.ioproject.repository;
+package com.example.ioproject.auth.repository;
 
-import com.example.ioproject.models.User;
-import com.example.ioproject.models.Vehicle;
+import com.example.ioproject.auth.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

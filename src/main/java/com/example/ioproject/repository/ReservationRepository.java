@@ -28,7 +28,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * @return list of conflicting {@link Reservation} objects, empty if none found
      */
     @Query("SELECT r FROM Reservation r WHERE r.vehicle_id = :vehicleId AND " +
-            "((r.start_date <= :endDate AND r.end_date >= :startDate))")
+            "r.status IN ('PENDING', 'PAID') AND " +
+            "(r.start_date <= :endDate AND r.end_date >= :startDate)")
     List<Reservation> findConflictingReservations(@Param("vehicleId") int vehicleId,
                                                   @Param("startDate") String startDate,
                                                   @Param("endDate") String endDate);

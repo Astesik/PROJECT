@@ -112,23 +112,30 @@ public class PaymentController {
   public ResponseEntity<String> handleStripeWebhook(
           @RequestBody String payload,
           @RequestHeader("Stripe-Signature") String sigHeader) {
-    String endpointSecret = stripeWebhookKey;
-
     try {
-      Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+      Stripe.apiKey = stripeSecretKey;
+      Event event = Webhook.constructEvent(payload, sigHeader, stripeWebhookKey);
 
-      if ("checkout.session.completed".equals(event.getType())) {
-        Session session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow();
+      switch (event.getType()) {
+        case "checkout.session.completed" -> {
+          Session session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow();
+          String reservationId = session.getClientReferenceId();
+          String stripeSessionId = session.getId();
 
-        String reservationId = session.getClientReferenceId();
-        String stripeSessionId = session.getId();
-
-        if (reservationId != null) {
-          reservationService.markAsPaid(Long.parseLong(reservationId));
-          System.out.println("💰 Rezerwacja " + reservationId + " opłacona przez Stripe!");
-        } else if (stripeSessionId != null) {
-          reservationService.findByStripeSessionId(stripeSessionId)
-                  .ifPresent(res -> reservationService.markAsPaid(res.getId()));
+          if (reservationId != null) {
+            reservationService.markAsPaid(Long.parseLong(reservationId));
+            System.out.println("Rezerwacja " + reservationId + " opłacona przez Stripe!");
+          } else if (stripeSessionId != null) {
+            reservationService.findByStripeSessionId(stripeSessionId)
+                    .ifPresent(res -> reservationService.markAsPaid(res.getId()));
+          }
+        }
+        case "checkout.session.expired" -> {
+          Session session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow();
+          String sessionId = session.getId();
+          reservationService.findByStripeSessionId(sessionId)
+                  .ifPresent(res -> reservationService.markAsCancelled(res.getId()));
+          System.out.println("Rezerwacja anulowana (sesja wygasła): " + sessionId);
         }
       }
 

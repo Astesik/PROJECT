@@ -114,10 +114,10 @@ public class ReservationService {
     public Reservation fromDTO(ReservationDTO dto) {
         Reservation res = new Reservation();
         res.setId(dto.getId());
-        res.setClient_id(dto.getClientId());
-        res.setVehicle_id(dto.getVehicleId());
-        res.setStart_date(dto.getStartDate());
-        res.setEnd_date(dto.getEndDate());
+        res.setClient_id(dto.getClient_id());
+        res.setVehicle_id(dto.getVehicle_id());
+        res.setStart_date(dto.getStart_date());
+        res.setEnd_date(dto.getEnd_date());
         res.setCost(dto.getCost());
         res.setStatus(dto.getStatus());
         res.setStripeSessionId(dto.getStripeSessionId());

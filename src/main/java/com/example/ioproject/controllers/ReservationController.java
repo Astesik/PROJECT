@@ -72,7 +72,7 @@ public class ReservationController {
         }
 
         boolean available = reservationService.isVehicleAvailable(
-                dto.getVehicleId(), dto.getStartDate(), dto.getEndDate()
+                dto.getVehicle_id(), dto.getStart_date(), dto.getEnd_date()
         );
 
         if (!available) {
@@ -82,9 +82,9 @@ public class ReservationController {
 
         Reservation saved = reservationService.createAndSavePendingReservation(
                 user.getId(),
-                dto.getVehicleId(),
-                dto.getStartDate(),
-                dto.getEndDate(),
+                dto.getVehicle_id(),
+                dto.getStart_date(),
+                dto.getEnd_date(),
                 dto.getCost()
         );
 

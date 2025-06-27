@@ -13,11 +13,11 @@ import lombok.Setter;
 public class ReservationDTO {
 
     private Long id;
-    private Long clientId;
-    private int vehicleId;
-    private String licensePlate;
-    private String startDate;
-    private String endDate;
+    private Long client_id;
+    private int vehicle_id;
+    private String license_plate;
+    private String start_date;
+    private String end_date;
     private double cost;
     private String status;
     private String stripeSessionId;

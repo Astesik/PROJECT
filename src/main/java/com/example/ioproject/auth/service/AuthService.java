@@ -1,6 +1,8 @@
 package com.example.ioproject.auth.service;
 
+import com.example.ioproject.auth.dto.response.GoogleResponse;
 import com.example.ioproject.auth.dto.response.JwtResponse;
+import com.example.ioproject.auth.dto.response.MessageResponse;
 import com.example.ioproject.auth.model.ERole;
 import com.example.ioproject.auth.model.Role;
 import com.example.ioproject.auth.model.User;
@@ -12,9 +14,10 @@ import com.example.ioproject.auth.dto.request.ChangePasswordRequest;
 import com.example.ioproject.auth.dto.request.GoogleRequest;
 import com.example.ioproject.auth.dto.request.LoginRequest;
 import com.example.ioproject.auth.dto.request.SignupRequest;
-import com.example.ioproject.security.services.GoogleAuthService;
 import com.example.ioproject.security.services.PasswordChangeAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,24 +70,34 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String authWithGoogle(GoogleRequest request) {
+    public ResponseEntity<?> authWithGoogle(GoogleRequest request) {
         String IdToken = googleAuthService.retriveIdToken(request);
         var payload = googleAuthService.verify(IdToken);
-        if (payload == null || !Boolean.TRUE.equals(payload.get("email_verified"))) {
-            throw new RuntimeException("Invalid or unverified Google ID token.");
+
+        if (payload == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid Google ID token."));
         }
 
         String email = (String) payload.get("email");
+        String name = (String) payload.get("name");
+        boolean emailVerified = Boolean.TRUE.equals(payload.get("email_verified"));
+
+        if (!emailVerified) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Email is not verified by Google."));
+        }
+
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
-            throw new RuntimeException("Google user not registered.");
+            GoogleResponse googleResponse = new GoogleResponse(name, email, false);
+            return new ResponseEntity<>(googleResponse, HttpStatus.OK);
         }
 
         UserDetails userDetails = UserDetails.build(user);
         Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
-        return jwtUtils.generateJwtToken(authToken);
+
+        return ResponseEntity.ok(jwtUtils.generateJwtToken(authToken));
     }
 
     public void changePassword(String username, ChangePasswordRequest request) {

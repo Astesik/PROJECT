@@ -42,8 +42,7 @@ public class AuthController {
 
   @PostMapping("/google")
   public ResponseEntity<?> google(@Valid @RequestBody GoogleRequest request) {
-    String token = authService.authWithGoogle(request);
-    return ResponseEntity.ok(token);
+      return authService.authWithGoogle(request);
   }
 
   @PostMapping("/change-password")

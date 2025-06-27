@@ -11,7 +11,7 @@ import com.example.ioproject.auth.dto.response.MessageResponse;
 import com.example.ioproject.auth.repository.RoleRepository;
 import com.example.ioproject.auth.repository.UserRepository;
 import com.example.ioproject.auth.security.jwt.JwtUtils;
-import com.example.ioproject.security.services.GoogleAuthService;
+import com.example.ioproject.auth.service.GoogleAuthService;
 import com.example.ioproject.auth.security.UserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

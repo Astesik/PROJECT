@@ -1,4 +1,4 @@
-package com.example.ioproject.security.services;
+package com.example.ioproject.auth.service;
 
 import com.example.ioproject.auth.dto.request.GoogleRequest;
 import com.fasterxml.jackson.databind.JsonNode;

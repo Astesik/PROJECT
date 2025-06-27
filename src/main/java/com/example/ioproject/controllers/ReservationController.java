@@ -63,34 +63,10 @@ public class ReservationController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> addReservation(@RequestBody ReservationDTO dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null) {
-            return ResponseEntity.status(404).body("User not found");
-        }
-
-        boolean available = reservationService.isVehicleAvailable(
-                dto.getVehicle_id(), dto.getStart_date(), dto.getEnd_date()
-        );
-
-        if (!available) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Reservation unsuccessful: the vehicle is already booked for this date.");
-        }
-
-        Reservation saved = reservationService.createAndSavePendingReservation(
-                user.getId(),
-                dto.getVehicle_id(),
-                dto.getStart_date(),
-                dto.getEnd_date(),
-                dto.getCost()
-        );
-
-        return ResponseEntity.ok(reservationService.toDTO(saved));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        ReservationDTO created = reservationService.createReservationForAuthenticatedUser(dto, username);
+        return ResponseEntity.ok(created);
     }
-
     @PutMapping("/{id}/pay-manual")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> markReservationAsManual(@PathVariable Long id) {

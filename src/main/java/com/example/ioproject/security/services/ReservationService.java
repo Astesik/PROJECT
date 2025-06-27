@@ -1,5 +1,7 @@
 package com.example.ioproject.security.services;
 
+import com.example.ioproject.auth.model.User;
+import com.example.ioproject.auth.repository.UserRepository;
 import com.example.ioproject.models.Reservation;
 import com.example.ioproject.models.Vehicle;
 import com.example.ioproject.payload.dtos.ReservationDTO;
@@ -7,7 +9,9 @@ import com.example.ioproject.repository.ReservationRepository;
 import com.example.ioproject.repository.VehicleRepository;
 import com.example.ioproject.utils.ReservationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,30 @@ public class ReservationService {
 
     @Autowired
     private VehicleRepository vehicleRepository; // <== Dodane do pobierania licensePlate
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public ReservationDTO createReservationForAuthenticatedUser(ReservationDTO dto, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean available = isVehicleAvailable(dto.getVehicle_id(), dto.getStart_date(), dto.getEnd_date());
+        if (!available) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Reservation unsuccessful: the vehicle is already booked for this date.");
+        }
+
+        Reservation saved = createAndSavePendingReservation(
+                user.getId(),
+                dto.getVehicle_id(),
+                dto.getStart_date(),
+                dto.getEnd_date(),
+                dto.getCost()
+        );
+
+        return toDTO(saved);
+    }
 
     public Reservation createAndSavePendingReservation(Long clientId, int vehicleId, String startDate, String endDate, double cost) {
         Reservation reservation = reservationFactory.createPendingReservation(clientId, vehicleId, startDate, endDate, cost);
